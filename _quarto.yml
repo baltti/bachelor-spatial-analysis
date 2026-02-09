@@ -1,0 +1,44 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "Основы пространственного анализа"
+  page-footer: |
+        © 2026, Татьяна Балтыжакова, Институт дизайна и урбанистики, Университет ИТМО
+  navbar:
+    left:
+      - href: index.qmd
+        text: О курсе
+      - href: lectures.qmd
+        text: Лекции
+      - sidebar:practice
+
+    right: 
+      - href: https://t.me/geomess
+        icon: telegram
+      - icon: github
+        href: https://github.com/baltti/bachelor-spatial-analysis   
+
+  sidebar:
+    - id: practice
+      logo: "images/logo.png"
+      pinned: true
+      align: center
+      title: "Практикум"
+      style: "docked"
+      collapse-level: 1
+      contents:
+        - 01-location-allocation.qmd
+
+format:
+  html:
+    theme: flatly
+    css: styles.css
+    toc: true
+    
+lang: ru-RU    
+language: custom.yml
+
+editor: visual
+
