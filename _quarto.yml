@@ -29,7 +29,12 @@ website:
       style: "docked"
       collapse-level: 1
       contents:
-        - 01-location-allocation.qmd
+    #    - 01-location-allocation.qmd
+         - section: Работа с данными дистанционного зондирования
+           contents:
+            - 01-remote-sensing-data.qmd
+            - 02-remote-sensing-basics.qmd
+            - 03-vegetation-indices.qmd
 
 format:
   html:
