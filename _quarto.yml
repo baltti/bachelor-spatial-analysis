@@ -35,6 +35,7 @@ website:
             - 01-remote-sensing-data.qmd
             - 02-remote-sensing-basics.qmd
             - 03-vegetation-indices.qmd
+            - 04-surface-temperature.qmd
 
 format:
   html:
