@@ -13,6 +13,9 @@ website:
       - href: lectures.qmd
         text: Лекции
       - sidebar:practice
+      - href: exam.qmd
+        text: Зачет
+      
 
     right: 
       - href: https://t.me/geomess
