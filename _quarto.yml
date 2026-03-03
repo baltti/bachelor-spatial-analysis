@@ -39,6 +39,7 @@ website:
             - 02-remote-sensing-basics.qmd
             - 03-vegetation-indices.qmd
             - 04-surface-temperature.qmd
+            - 05-image-classification.qmd
 
 format:
   html:
