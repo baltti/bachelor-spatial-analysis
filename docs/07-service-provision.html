@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Классификация объектов на снимках – Основы пространственного анализа</title>
+<title>Анализ доступности и обеспеченности населения сервисами – Основы пространственного анализа</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -67,6 +67,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="styles.css">
 </head>
@@ -159,7 +188,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Переключить боковую панель навигации" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./01-remote-sensing-data.html">Работа с данными дистанционного зондирования</a></li><li class="breadcrumb-item"><a href="./05-image-classification.html">Классификация объектов на снимках</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./07-service-provision.html">Анализ доступности и обеспеченности населения сервисами</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Переключить боковую панель навигации" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -178,13 +207,13 @@ ul.task-list li input[type="checkbox"] {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
  <span class="menu-text">Работа с данными дистанционного зондирования</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Переключить раздел">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="Переключить раздел">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./01-remote-sensing-data.html" class="sidebar-item-text sidebar-link">
@@ -211,7 +240,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./05-image-classification.html" class="sidebar-item-text sidebar-link active">
+  <a href="./05-image-classification.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Классификация объектов на снимках</span></a>
   </div>
 </li>
@@ -225,7 +254,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./07-service-provision.html" class="sidebar-item-text sidebar-link">
+  <a href="./07-service-provision.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Анализ доступности и обеспеченности населения сервисами</span></a>
   </div>
 </li>
@@ -239,16 +268,23 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Содержание</h2>
    
   <ul>
-  <li><a href="#модуль-semi-automatic-classification-plugin" id="toc-модуль-semi-automatic-classification-plugin" class="nav-link active" data-scroll-target="#модуль-semi-automatic-classification-plugin">Модуль Semi-automatic classification plugin</a></li>
+  <li><a href="#исходные-данные" id="toc-исходные-данные" class="nav-link active" data-scroll-target="#исходные-данные">Исходные данные</a></li>
+  <li><a href="#формулы-для-расчета" id="toc-формулы-для-расчета" class="nav-link" data-scroll-target="#формулы-для-расчета">Формулы для расчета</a></li>
+  <li><a href="#расчет-доступности" id="toc-расчет-доступности" class="nav-link" data-scroll-target="#расчет-доступности">Расчет доступности</a>
+  <ul class="collapse">
+  <li><a href="#входные-данные" id="toc-входные-данные" class="nav-link" data-scroll-target="#входные-данные">Входные данные</a></li>
+  <li><a href="#построение-модели-расчета-доступности" id="toc-построение-модели-расчета-доступности" class="nav-link" data-scroll-target="#построение-модели-расчета-доступности">Построение модели расчета доступности</a></li>
+  </ul></li>
+  <li><a href="#расчет-обеспеченности" id="toc-расчет-обеспеченности" class="nav-link" data-scroll-target="#расчет-обеспеченности">Расчет обеспеченности</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./01-remote-sensing-data.html">Работа с данными дистанционного зондирования</a></li><li class="breadcrumb-item"><a href="./05-image-classification.html">Классификация объектов на снимках</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Классификация объектов на снимках</h1>
+<h1 class="title">Анализ доступности и обеспеченности населения сервисами</h1>
 </div>
 
 
@@ -265,62 +301,8 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="модуль-semi-automatic-classification-plugin" class="level1">
-<h1>Модуль Semi-automatic classification plugin</h1>
-<p>На спутниковых снимках возможно распознавание объектов на основе алгоритмов классификации.</p>
-<p>Отличие классификации от сегментации состоит в том, что здесь выделяют не конкретные объекты на снимках (как в предыдущем разделе, например, выделялись только здания или стройплощадки), а классы объектов на снимках на основе имеющихся областей с известным классом.</p>
-<p>Для классификации используют не только входной растр, но и еще набор объектов, определяющий классы.</p>
-<p>Главным способом осуществить классификацию изображения является использование модуля <a href="https://semiautomaticclassificationmanual.readthedocs.io/">Semi-automatic classification plugin</a>.</p>
-<div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Внимание
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Если вы будете устанавливать этот модуль, то рекомендую внимательно посмотреть документацию по его установке для своей системы по <a href="https://semiautomaticclassificationmanual.readthedocs.io/pl/latest/installation.html">ссылке</a>.</p>
-<p>Так для системы Windows нужно дополнительно установить библиотеки, от которых зависит работа модуля.</p>
-<p>Для этого нужно запустить консоль OSGeo4W Shell, в которой ввести команду:</p>
-<pre><code>pip3 install --upgrade remotior-sensus</code></pre>
-</div>
-</div>
-<p>После установки модуль появится в панели инструментов и в виде отдельной панели сбоку.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/Снимок экрана 2025-03-07 132940.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
-</figure>
-</div>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Дополнительно
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Базовый туториал по классификации снимков на английском</p>
-<iframe width="800" height="400" src="https://www.youtube.com/embed/7SZDCFXjIbA?si=nzANhERRrclgXFSC" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen=""></iframe>
-</div>
-</div>
-<p>На первом этапе следует создать набор каналов, который будет служить исходной информацией для классификации. Этот набор можно собрать в окне модуля, которое вызывается по кнопке <img src="images/Снимок экрана 2025-03-07 153407.png" class="img-fluid" width="29">.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/Снимок экрана 2025-03-07 153457.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
-</figure>
-</div>
-<p>Новый набор каналов необходимо добавить кнопкой <em>Добавить новый набор каналов (Add new band set)</em> <img src="images/Снимок экрана 2025-03-07 153547.png" class="img-fluid">. После добавления пустого набора каналов вы можете либо добавить отдельные каналы из файлов <img src="images/Снимок экрана 2025-03-07 153608.png" class="img-fluid">, либо добавить уже открытые в вашем проекте каналы. После выбора и открытия всех нужных каналов нужно выбрать длины волн различных каналов (в выпадающем списке <em>Wavelength</em>), здесь можно выбрать готовые наборы, например, Landsat 8.</p>
-<p>Кроме того, нужно выбрать как будет сохраняться ваш набор каналов: или как виртуальный растр (<em>Create virtual raster of band set</em>), или как объединенный растр (<em>Create raster of bands</em>); после чего нажать кнопку выполнения <img src="images/Снимок экрана 2025-03-07 154254.png" class="img-fluid" width="74"> и ожидать результата.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/Снимок экрана 2025-03-07 154541.png" class="img-fluid figure-img"></p>
-<figcaption>Полученный мультиспектральный снимок</figcaption>
-</figure>
-</div>
+<p><strong><em>Обеспеченность населения объектами</em></strong> - <em>количественная характеристика</em> сети объектов социальной, транспортной коммунальной инфраструктур, объектов благоустройства. Обеспеченность населения объектами рекомендуется рассчитывать, <em>как удельную мощность (вместимость, емкость, пропускная способность и т.д.) какого-либо вида инфраструктуры, приходящуюся на одного жителя или представителя определенной возрастной, социальной, профессиональной группы либо на определенное число (сто, тысячу и т.д.) жителей или представителей указанных групп</em>.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+<p><strong><em>Территориальная доступность</em></strong> - <em>пространственная характеристика</em> сети объектов социальной, транспортной коммунальной инфраструктур. Территориальную доступность <em>рекомендуется рассчитывать либо исходя из затрат на достижение выбранного объекта (как правило, затрат времени), либо исходя из расстояния до выбранного объекта, измеренного по прямой, по имеющимся путям передвижения, или иным образом</em>.</p>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -331,114 +313,324 @@ ul.task-list li input[type="checkbox"] {
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Полученный снимок будет не в естественных цветах, так как мы использовали все каналы, в том числе из невидимой глазом части спектра.</p>
-<p>Здесь можно создать любой композит, который вы посчитаете нужным.</p>
+<p>Доступность - это метрика расстояния, то есть насколько близко/далеко находится услуга или сервис. Например, есть ли в пределах 15-минутной доступности от дома школа или детский сад.</p>
+<p>Обеспеченность - это то, какой процент населения или конкретной демографической группы может воспользоваться сервисом/услугой с учетом его емкости или сколько мест в школе приходится на 1000 человек населения.</p>
 </div>
 </div>
-<p>Для классификации необходимо создать тренировочный набор данных, на основании которого и будут определяться классы на нашем снимке.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/Снимок экрана 2025-03-07 154908.png" class="img-fluid figure-img"></p>
-<figcaption>Создание нового тренировочного набора данных</figcaption>
-</figure>
-</div>
-<p>Каждый класс будет содержать в себе определенный тип объектов со своей спектральной характеристикой.</p>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th><strong>Macroclass name</strong></th>
-<th><strong>Macroclass ID</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Water</td>
-<td>1</td>
-</tr>
-<tr class="even">
-<td>Built-up</td>
-<td>2</td>
-</tr>
-<tr class="odd">
-<td>Vegetation</td>
-<td>3</td>
-</tr>
-<tr class="even">
-<td>Soil</td>
-<td>4</td>
-</tr>
-</tbody>
-</table>
-<p>Тренировчоный набор данных создается вручную с использованием инструмента на панели инструментов <img src="images/Снимок экрана 2025-03-07 155629.png" class="img-fluid" width="25">. После отрисовки полигон будет отображаться в виде полупрозрачной оранжевой фигуры.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/Снимок экрана 2025-03-07 160014.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
-</figure>
-</div>
-<p>Для добавления полигона в тренировочный набор данных нужно указать его <em>MC ID (идентификатор класса), MC Name (название класса), C ID (идентификатор полигона), C Name (имя полигона)</em>.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/Снимок экрана 2025-03-07 160126.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
-</figure>
-</div>
-<p>После заполнения характеристик следует нажать кнопку добавления в набор данных <img src="images/Снимок экрана 2025-03-07 160345.png" width="30" height="25">.</p>
-<p>Таким образом следует добавить все необходимые классы.</p>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Дополнительно
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>После того, как вы создали хотя бы один полигон для класса, можно выделять новые полигоны этого класса автоматически, с использованием <img src="images/Снимок экрана 2025-03-07 161129.png" width="23" height="27">.</p>
-</div>
-</div>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/Снимок экрана 2025-03-07 160944.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
-</figure>
-</div>
-<p>После создания тренировочного набора данных, можно открыть основное окно модуля и переключиться на классификацию.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/Снимок экрана 2025-03-07 161434.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
-</figure>
-</div>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Дополнительно
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Перед классификацией можно попробовать сделать предварительный просмотр результатов по нажатию на кнопку <img src="images/Снимок экрана 2025-03-07 161554.png" width="22" height="26">.</p>
-</div>
-</div>
-<p>Запуск классификации осуществляется по кнопке <img src="images/Снимок экрана 2025-03-07 161900.png" class="img-fluid" width="53">.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/Снимок экрана 2025-03-07 162116.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
-</figure>
-</div>
-<p>Кроме этого модуля существует еще целый ряд других, которые предназначены для классификации:</p>
+<section id="исходные-данные" class="level1">
+<h1>Исходные данные</h1>
 <ul>
-<li><p><a href="https://www.orfeo-toolbox.org/CookBook/index.html">Orfeo toolbox</a>;</p></li>
-<li><p><a href="https://qgis-plugin-deepness.readthedocs.io/en/latest/">Deepness (deep neural remote sensing)</a>;</p></li>
-<li><p><a href="https://github.com/nkarasiak/dzetsaka">dzetsaka</a>.</p></li>
+<li><p>жилые дома (можно воспользоваться уже имеющимися у вас данными или скачать новые) - для оценки количества жителей;</p></li>
+<li><p>объекты сервиса (детские сады или школы; также можете взять уже имеющиеся у вас данные или создать новые) - для расчета обеспеченности.</p></li>
 </ul>
-<p>В качестве еще одной альтернативы для классификации изображений можно воспользоваться готовым инструментом от компании NextGIS - <a href="https://toolbox.nextgis.com/t/image_classification" class="uri">https://toolbox.nextgis.com/t/image_classification</a> (требуется регистрация).</p>
-<iframe width="720" height="405" src="https://rutube.ru/play/embed/a7d2e53ab4721c809984a033207e7951/" frameborder="0" allow="clipboard-write; autoplay" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
+<p>Для объектов сервиса обязательно нужно будет создать атрибут <code>capacity</code> (вместимость или мощность объекта) - количество людей, которое сервис может обслужить.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/clipboard-2506351534.png" class="img-fluid figure-img"></p>
+<figcaption>Пример исходных данных</figcaption>
+</figure>
+</div>
+<p>В этой работе будет сразу собрана геомодель для расчета доступности и обеспеченности населения сервисами.</p>
+<p>Заполним атрибут <code>capacity</code>, исходя из усредненного норматива вместимости:</p>
+<ul>
+<li><p>для детских садов - 200 мест<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>;</p></li>
+<li><p>для школ - 1000 мест<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>.</p></li>
+</ul>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Внимание
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>По действующим в настоящее время нормативам вместимость как детских садов, так и школ определяется заданием на проектирование.</p>
+<p>Мы с вами пользуемся очень условными значениями только в качестве примера, так как реальные данные о вместимости нам недоступны.</p>
+</div>
+</div>
+<p>Для того, чтобы прописать значение атрибута сразу для всех объектов слоя, в таблице атрибутов слева сверху (сразу под панелью инструментов) вы можете выбрать нужный вам атрибут, прописать его значение и нажать кнопку <em>Обновить все</em>. После этого значения атрибута заполнится для всех строк в таблице.</p>
+<p><img src="images/clipboard-2398941912.png" class="img-fluid"></p>
+<p>Количество населения в каждом доме рассчитаем по формуле:</p>
+<p><span class="math display">\[
+Численность\ населения = \dfrac{Общая\ площадь}{36}=\dfrac{Площадь\ полигона*Этажность}{36}
+\]</span></p>
+<p>В данном случае 36 метров квадратных - это средняя общая площадь квартиры, приходящаяся на одного человека.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+На заметку
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Как рассчитать площадь здания описано по <a href="https://baltti.github.io/bachelor-gis-course/floor%20area%20ratio.html">ссылке</a>.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+На заметку
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Для тех зданий, где неизвестна этажность, ее можно заполнить как среднее значение этажности для слоя, воспользовавшись выражением:</p>
+<pre><code>case when "Этажность" is NULL 
+  then mean("Этажность")
+  else "Этажность"
+end</code></pre>
+</div>
+</div>
+</section>
+<section id="формулы-для-расчета" class="level1">
+<h1>Формулы для расчета</h1>
+<p>В базовом виде обеспеченность можно рассчитать по простой формуле:</p>
+<p><span class="math display">\[
+Обеспеченность = \dfrac{Вместимость\  объекта}{Численность\  населения}
+\]</span></p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+На заметку
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Численность населения может быть взята как общее число населения, так и количество населения в конкретной возрастной группе (например, количество детей).</p>
+<p>Численность населения также может учитываться только в пределах заданной доступности сервиса.</p>
+</div>
+</div>
+<p>В том случае, если обеспеченность необходимо рассчитать на 1000 человек, формула немного поменяется:</p>
+<p><span class="math display">\[
+Обеспеченность = \dfrac{Вместимость\  объекта}{Численность\  населения}* 1000
+\]</span></p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+На заметку
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Здесь в качестве множителя будет выступать то число, на которое необходимо пересчитать обеспеченность (100, 1000 и т.д.).</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Дополнительно
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Доступность также может быть рассчитана в виде относительного показателя:</p>
+<p><span class="math display">\[
+Доступность = \dfrac{Численность\ населения\ в\ пределах\ заданного\ расстояния}{Численность\  населения}*100\%
+\]</span></p>
+</div>
+</div>
+</section>
+<section id="расчет-доступности" class="level1">
+<h1>Расчет доступности</h1>
+<p>Для построения моделей будем использовать редактор моделей.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Дополнительно
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Редактор моделей позволяет выстроить последовательный процесс вычислений из цепочки операций с помощью простого графического интерфейса.</p>
+<p>Полученная геомодель позволяет автоматизировать вычисления и избежать вывода промежуточных результатов.</p>
+<p>Подробнее про построение геомоделей можно в <a href="https://docs.qgis.org/3.34/en/docs/user_manual/processing/modeler.html">документации</a></p>
+</div>
+</div>
+<p>Открыть редактор моделей можно из строки меню <em>Анализ данных</em> <span class="math inline">\(\longrightarrow\)</span> <em>Конструктор моделей</em> или по клику на кнопку <em>Модели</em> в Панели инструментов анализа.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/Снимок экрана 2025-02-24 в 13.07.26.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+<p>В открывшемся новом окне основная часть предназначена для отображения модели в графическом виде, слева панель данных и алгоритмов (переключаются по вкладкам внизу панели), свойства и переменные модели, а также история команд.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/Снимок экрана 2025-02-24 в 13.08.29.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+На заметку
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>В качестве доступных вам алгоритмов вы можете использовать все инструменты, которые есть в вашей панели инструментов анализа в основном окне программы.</p>
+</div>
+</div>
+<section id="входные-данные" class="level2">
+<h2 class="anchored" data-anchor-id="входные-данные">Входные данные</h2>
+<p>В первую очередь зададим для нашей модели входные данные. В нашем случае все входные данные будут представлены в виде векторных слоев:</p>
+<ul>
+<li><p>здания - обязательный параметр, полигоны;</p></li>
+<li><p>сервисы - обазятельный параметр, полигоны.</p></li>
+</ul>
+<p>Обязательный параметр - это тот, без включения которого в исходные данные запуск модели осуществляться не будет.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Внимание
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Желательно называть входные данные буквами английского алфавита, так как иногда они могут не добавляться в модель или работать некорректно при использовании кириллицы.</p>
+</div>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/clipboard-3485795247.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="2042"></p>
+</figure>
+</div>
+<p>После добавления входных данных вы увидите их в рабочем пространстве модели.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/clipboard-274330332.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="1462"></p>
+</figure>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+На заметку
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>При необходимости вы можете передвигать элементы модели так, чтобы их было лучше видно, и масштабировать изображение элементов в рабочем пространстве.</p>
+</div>
+</div>
+</section>
+<section id="построение-модели-расчета-доступности" class="level2">
+<h2 class="anchored" data-anchor-id="построение-модели-расчета-доступности">Построение модели расчета доступности</h2>
+<p>Для расчета доступности сервиса в первую очередь необходимо построить зоны обслуживания. Здесь мы воспользуемся буферными зонами для их построения.</p>
+<p>Размер буферных зон будет определяться градостроительными нормативами:</p>
+<ul>
+<li><p>300 метров для детских садов;</p></li>
+<li><p>500 метров для школ.</p></li>
+</ul>
+<p>Однако, чтобы строить буферные зоны в метрических единицах измерения, сначала необходимо перепроецировать слой в плоскую прямоугольную систему координат.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+На заметку
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Проще всего воспользоваться системой координат из семейства UTM или одной из систем из группы систем координат Гаусса-Крюгера (они аналогичны, отличаются только нумерацией зон).</p>
+<p>Чтобы рассчитать номер зоны для UTM системы координат вы можете воспользоваться калькулятором по <a href="https://www.latlong.net/lat-long-utm.html">ссылке</a>.</p>
+</div>
+</div>
+<p>На вкладке <em>Алгоритмы</em> найдем нужный нам инструмент - <em>Перепроецировать слой</em> и укажем его параметры в открывшемся окне.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/clipboard-1310435067.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="898"></p>
+</figure>
+</div>
+<p>Аналогично добавим перепроецирование для зданий.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/clipboard-3388561227.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="1777"></p>
+</figure>
+</div>
+<p>Следующим этапом построим буферные зоны для объектов сервиса. Для этого найдем инструмент <em>Буферизация</em>. Так как мы здесь будем использовать не исходные данные, а результат выполнения перепроецирования, то по нажатию на кнопку <img src="images/clipboard-1454870356.png" class="img-fluid" width="58"> следует выбрать пункт <em>Вывод алгоритма</em>, после чего выбрать результат перепроецирования для объектов сервиса.</p>
+<p><img src="images/clipboard-2107994983.png" class="img-fluid"></p>
+<p>Далее необходимо указать расстояние - радиус обслуживания сервиса.</p>
+<p><img src="images/clipboard-2075241895.png" class="img-fluid"></p>
+<p>На следующем этапе нужно рассчитать количество населения, попавшее в радиус доступности.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+На заметку
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>В данном случае пример будет показан на основе инструмента <em>Объединение атрибутов по расположению (сводка)</em>, но вы также можете воспользоваться калькулятором полей и выражением аналогично тому, как мы это делали в прошлом семестре.</p>
+</div>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/clipboard-3757442539.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="1280"></p>
+</figure>
+</div>
+<p>На последнем этапе составим выражение для расчета процента населения, которое находится в пределах радиуса доступности от сервиса, с использованием калькулятора полей.</p>
+<p><img src="images/clipboard-3764636610.png" class="img-fluid"></p>
+<p>Итоговая модель будет выглядеть, как показано на рисунке ниже.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/clipboard-2376702965.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="1219"></p>
+</figure>
+</div>
+</section>
+</section>
+<section id="расчет-обеспеченности" class="level1">
+<h1>Расчет обеспеченности</h1>
+<p>Полученную модель можно дополнить расчетом обеспеченности.</p>
+<p><img src="images/clipboard-980433365.png" class="img-fluid"></p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+На заметку
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Ваша геомодель может иметь столько результатов, сколько вы посчитаете нужным.</p>
+<p>При необходимости каждый этап расчета может быть выведен как самостоятельный результат.</p>
+</div>
+</div>
+<p><img src="images/clipboard-2107511711.png" class="img-fluid"></p>
 
 
 </section>
 
-</main> <!-- /main -->
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Сноски</h2>
+
+<ol>
+<li id="fn1"><p>Приказ Минэкономразвития России от 15.02.2021 N 71 “Об утверждении Методических рекомендаций по подготовке нормативов градостроительного проектирования” <a href="https://www.consultant.ru/document/cons_doc_LAW_379662/" class="uri">https://www.consultant.ru/document/cons_doc_LAW_379662/</a><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Детские ясли-сады следует проектировать на 1, 2, 4, 6, 8, 10, 12 и 14 групп или, соответственно, не более чем на 25, 50, 95, 145, 195, 240, 290 и 340 мест. - <strong>СНиП Н-64-80. Детские дошкольные учреждения/Госстрой СССР. — М.: Стройиздат, 1981.— 15 с</strong><a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>Количество ученических мест в типовых проектах зданий школ и школ-интернатов следует принимать не более: в школах - 1400 - <strong>СНиП II-Л.4-62 Общеобразовательные школы и школы-интернаты. Нормы проектирования</strong><a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";

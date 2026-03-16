@@ -40,6 +40,7 @@ website:
             - 04-surface-temperature.qmd
             - 05-image-classification.qmd
          - 06-location-allocation.qmd
+         - 07-service-provision.qmd
 
 format:
   html:
