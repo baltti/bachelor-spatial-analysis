@@ -18,14 +18,12 @@ website:
       
 
     right: 
-      - href: https://t.me/geomess
-        icon: telegram
       - icon: github
         href: https://github.com/baltti/bachelor-spatial-analysis   
 
   sidebar:
     - id: practice
-      logo: "images/logo.png"
+      logo: "images/logo_urbanistika_ITMO_itog_RUS_plashka_ikonka_white.png"
       pinned: true
       align: center
       title: "Практикум"
