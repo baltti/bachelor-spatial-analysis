@@ -39,6 +39,7 @@ website:
             - 05-image-classification.qmd
          - 06-location-allocation.qmd
          - 07-service-provision.qmd
+         - 08-gravity-model.qmd
 
 format:
   html:

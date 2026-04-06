@@ -1,0 +1,17 @@
+---
+title: "Гравитационная модель"
+---
+
+# Исходные данные
+
+Исходные данные можно скачать по ссылке <https://disk.yandex.ru/d/qX2hFnoL-NLUoA>
+
+В качестве исходных данных будут использоваться:
+
+-   границы муниципальных образований города Санкт-Петербург - *mo.geojson*;
+
+-   плотность населения по регулярной сетке (данные от компании Kontur[^1]) - *spb_population.geojson;*
+
+-   улично-дорожная сеть - *Улично-дорожная сеть.geojson.*
+
+[^1]: Russian Federation population density for 400m H3 hexagons <https://data.humdata.org/dataset/kontur-population-russian-federation>

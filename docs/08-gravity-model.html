@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Классификация объектов на снимках – Основы пространственного анализа</title>
+<title>Гравитационная модель – Основы пространственного анализа</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -158,7 +158,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Переключить боковую панель навигации" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./01-remote-sensing-data.html">Работа с данными дистанционного зондирования</a></li><li class="breadcrumb-item"><a href="./05-image-classification.html">Классификация объектов на снимках</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./08-gravity-model.html">Гравитационная модель</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Переключить боковую панель навигации" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -177,13 +177,13 @@ ul.task-list li input[type="checkbox"] {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
  <span class="menu-text">Работа с данными дистанционного зондирования</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Переключить раздел">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="Переключить раздел">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./01-remote-sensing-data.html" class="sidebar-item-text sidebar-link">
@@ -210,7 +210,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./05-image-classification.html" class="sidebar-item-text sidebar-link active">
+  <a href="./05-image-classification.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Классификация объектов на снимках</span></a>
   </div>
 </li>
@@ -230,7 +230,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./08-gravity-model.html" class="sidebar-item-text sidebar-link">
+  <a href="./08-gravity-model.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Гравитационная модель</span></a>
   </div>
 </li>
@@ -244,16 +244,16 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Содержание</h2>
    
   <ul>
-  <li><a href="#модуль-semi-automatic-classification-plugin" id="toc-модуль-semi-automatic-classification-plugin" class="nav-link active" data-scroll-target="#модуль-semi-automatic-classification-plugin">Модуль Semi-automatic classification plugin</a></li>
+  <li><a href="#исходные-данные" id="toc-исходные-данные" class="nav-link active" data-scroll-target="#исходные-данные">Исходные данные</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./01-remote-sensing-data.html">Работа с данными дистанционного зондирования</a></li><li class="breadcrumb-item"><a href="./05-image-classification.html">Классификация объектов на снимках</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Классификация объектов на снимках</h1>
+<h1 class="title">Гравитационная модель</h1>
 </div>
 
 
@@ -270,180 +270,26 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="модуль-semi-automatic-classification-plugin" class="level1">
-<h1>Модуль Semi-automatic classification plugin</h1>
-<p>На спутниковых снимках возможно распознавание объектов на основе алгоритмов классификации.</p>
-<p>Отличие классификации от сегментации состоит в том, что здесь выделяют не конкретные объекты на снимках (как в предыдущем разделе, например, выделялись только здания или стройплощадки), а классы объектов на снимках на основе имеющихся областей с известным классом.</p>
-<p>Для классификации используют не только входной растр, но и еще набор объектов, определяющий классы.</p>
-<p>Главным способом осуществить классификацию изображения является использование модуля <a href="https://semiautomaticclassificationmanual.readthedocs.io/">Semi-automatic classification plugin</a>.</p>
-<div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Внимание
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Если вы будете устанавливать этот модуль, то рекомендую внимательно посмотреть документацию по его установке для своей системы по <a href="https://semiautomaticclassificationmanual.readthedocs.io/pl/latest/installation.html">ссылке</a>.</p>
-<p>Так для системы Windows нужно дополнительно установить библиотеки, от которых зависит работа модуля.</p>
-<p>Для этого нужно запустить консоль OSGeo4W Shell, в которой ввести команду:</p>
-<pre><code>pip3 install --upgrade remotior-sensus</code></pre>
-</div>
-</div>
-<p>После установки модуль появится в панели инструментов и в виде отдельной панели сбоку.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/Снимок экрана 2025-03-07 132940.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
-</figure>
-</div>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Дополнительно
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Базовый туториал по классификации снимков на английском</p>
-<iframe width="800" height="400" src="https://www.youtube.com/embed/7SZDCFXjIbA?si=nzANhERRrclgXFSC" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen=""></iframe>
-</div>
-</div>
-<p>На первом этапе следует создать набор каналов, который будет служить исходной информацией для классификации. Этот набор можно собрать в окне модуля, которое вызывается по кнопке <img src="images/Снимок экрана 2025-03-07 153407.png" class="img-fluid" width="29">.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/Снимок экрана 2025-03-07 153457.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
-</figure>
-</div>
-<p>Новый набор каналов необходимо добавить кнопкой <em>Добавить новый набор каналов (Add new band set)</em> <img src="images/Снимок экрана 2025-03-07 153547.png" class="img-fluid">. После добавления пустого набора каналов вы можете либо добавить отдельные каналы из файлов <img src="images/Снимок экрана 2025-03-07 153608.png" class="img-fluid">, либо добавить уже открытые в вашем проекте каналы. После выбора и открытия всех нужных каналов нужно выбрать длины волн различных каналов (в выпадающем списке <em>Wavelength</em>), здесь можно выбрать готовые наборы, например, Landsat 8.</p>
-<p>Кроме того, нужно выбрать как будет сохраняться ваш набор каналов: или как виртуальный растр (<em>Create virtual raster of band set</em>), или как объединенный растр (<em>Create raster of bands</em>); после чего нажать кнопку выполнения <img src="images/Снимок экрана 2025-03-07 154254.png" class="img-fluid" width="74"> и ожидать результата.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/Снимок экрана 2025-03-07 154541.png" class="img-fluid figure-img"></p>
-<figcaption>Полученный мультиспектральный снимок</figcaption>
-</figure>
-</div>
-<div class="callout callout-style-default callout-important callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Важно
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Полученный снимок будет не в естественных цветах, так как мы использовали все каналы, в том числе из невидимой глазом части спектра.</p>
-<p>Здесь можно создать любой композит, который вы посчитаете нужным.</p>
-</div>
-</div>
-<p>Для классификации необходимо создать тренировочный набор данных, на основании которого и будут определяться классы на нашем снимке.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/Снимок экрана 2025-03-07 154908.png" class="img-fluid figure-img"></p>
-<figcaption>Создание нового тренировочного набора данных</figcaption>
-</figure>
-</div>
-<p>Каждый класс будет содержать в себе определенный тип объектов со своей спектральной характеристикой.</p>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th><strong>Macroclass name</strong></th>
-<th><strong>Macroclass ID</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Water</td>
-<td>1</td>
-</tr>
-<tr class="even">
-<td>Built-up</td>
-<td>2</td>
-</tr>
-<tr class="odd">
-<td>Vegetation</td>
-<td>3</td>
-</tr>
-<tr class="even">
-<td>Soil</td>
-<td>4</td>
-</tr>
-</tbody>
-</table>
-<p>Тренировчоный набор данных создается вручную с использованием инструмента на панели инструментов <img src="images/Снимок экрана 2025-03-07 155629.png" class="img-fluid" width="25">. После отрисовки полигон будет отображаться в виде полупрозрачной оранжевой фигуры.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/Снимок экрана 2025-03-07 160014.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
-</figure>
-</div>
-<p>Для добавления полигона в тренировочный набор данных нужно указать его <em>MC ID (идентификатор класса), MC Name (название класса), C ID (идентификатор полигона), C Name (имя полигона)</em>.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/Снимок экрана 2025-03-07 160126.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
-</figure>
-</div>
-<p>После заполнения характеристик следует нажать кнопку добавления в набор данных <img src="images/Снимок экрана 2025-03-07 160345.png" width="30" height="25">.</p>
-<p>Таким образом следует добавить все необходимые классы.</p>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Дополнительно
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>После того, как вы создали хотя бы один полигон для класса, можно выделять новые полигоны этого класса автоматически, с использованием <img src="images/Снимок экрана 2025-03-07 161129.png" width="23" height="27">.</p>
-</div>
-</div>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/Снимок экрана 2025-03-07 160944.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
-</figure>
-</div>
-<p>После создания тренировочного набора данных, можно открыть основное окно модуля и переключиться на классификацию.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/Снимок экрана 2025-03-07 161434.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
-</figure>
-</div>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Дополнительно
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Перед классификацией можно попробовать сделать предварительный просмотр результатов по нажатию на кнопку <img src="images/Снимок экрана 2025-03-07 161554.png" width="22" height="26">.</p>
-</div>
-</div>
-<p>Запуск классификации осуществляется по кнопке <img src="images/Снимок экрана 2025-03-07 161900.png" class="img-fluid" width="53">.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/Снимок экрана 2025-03-07 162116.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
-</figure>
-</div>
-<p>Кроме этого модуля существует еще целый ряд других, которые предназначены для классификации:</p>
+<section id="исходные-данные" class="level1">
+<h1>Исходные данные</h1>
+<p>Исходные данные можно скачать по ссылке <a href="https://disk.yandex.ru/d/qX2hFnoL-NLUoA" class="uri">https://disk.yandex.ru/d/qX2hFnoL-NLUoA</a></p>
+<p>В качестве исходных данных будут использоваться:</p>
 <ul>
-<li><p><a href="https://www.orfeo-toolbox.org/CookBook/index.html">Orfeo toolbox</a>;</p></li>
-<li><p><a href="https://qgis-plugin-deepness.readthedocs.io/en/latest/">Deepness (deep neural remote sensing)</a>;</p></li>
-<li><p><a href="https://github.com/nkarasiak/dzetsaka">dzetsaka</a>.</p></li>
+<li><p>границы муниципальных образований города Санкт-Петербург - <em>mo.geojson</em>;</p></li>
+<li><p>плотность населения по регулярной сетке (данные от компании Kontur<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>) - <em>spb_population.geojson;</em></p></li>
+<li><p>улично-дорожная сеть - <em>Улично-дорожная сеть.geojson.</em></p></li>
 </ul>
-<p>В качестве еще одной альтернативы для классификации изображений можно воспользоваться готовым инструментом от компании NextGIS - <a href="https://toolbox.nextgis.com/t/image_classification" class="uri">https://toolbox.nextgis.com/t/image_classification</a> (требуется регистрация).</p>
-<iframe width="720" height="405" src="https://rutube.ru/play/embed/a7d2e53ab4721c809984a033207e7951/" frameborder="0" allow="clipboard-write; autoplay" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen=""></iframe>
 
 
 </section>
 
-</main> <!-- /main -->
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Сноски</h2>
+
+<ol>
+<li id="fn1"><p>Russian Federation population density for 400m H3 hexagons <a href="https://data.humdata.org/dataset/kontur-population-russian-federation" class="uri">https://data.humdata.org/dataset/kontur-population-russian-federation</a><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
