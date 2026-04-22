@@ -67,6 +67,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="styles.css">
 </head>
@@ -249,6 +278,12 @@ ul.task-list li input[type="checkbox"] {
    
   <ul>
   <li><a href="#исходные-данные" id="toc-исходные-данные" class="nav-link active" data-scroll-target="#исходные-данные">Исходные данные</a></li>
+  <li><a href="#geomodel" id="toc-geomodel" class="nav-link" data-scroll-target="#geomodel">Построение геомодели</a>
+  <ul class="collapse">
+  <li><a href="#входные-данные" id="toc-входные-данные" class="nav-link" data-scroll-target="#входные-данные">Входные данные</a></li>
+  <li><a href="#расчет-матрицы-старт-назначение-между-потребителями-и-сервисами" id="toc-расчет-матрицы-старт-назначение-между-потребителями-и-сервисами" class="nav-link" data-scroll-target="#расчет-матрицы-старт-назначение-между-потребителями-и-сервисами">Расчет матрицы старт-назначение между потребителями и сервисами</a></li>
+  <li><a href="#расчет-вероятности-посещения-конкретного-сервиса" id="toc-расчет-вероятности-посещения-конкретного-сервиса" class="nav-link" data-scroll-target="#расчет-вероятности-посещения-конкретного-сервиса">Расчет вероятности посещения конкретного сервиса</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -283,8 +318,307 @@ ul.task-list li input[type="checkbox"] {
 <li><p>плотность населения по регулярной сетке (данные от компании Kontur<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>) - <em>spb_population.geojson;</em></p></li>
 <li><p>улично-дорожная сеть - <em>Улично-дорожная сеть.geojson.</em></p></li>
 </ul>
+<p>На первом этапе подготовки данных выберем ячейки плотности населения для одного из районов. Сделать это можно выделив муниципальные образования одного из районов (функция <em>Выбрать по значению атрибута</em>, атрибут <em>ADMIN_L5</em>). После этого вы можете воспользоваться функцией <em>Извлечь по расположению</em> и создать новый слой с ячейками плотности населения, попавшими внутрь выбранного района.</p>
+<p>Слой с локациями торговых точек мы создадим самостоятельно. Для этого в строке меню необходимо выбрать <em>Слой</em> <span class="math inline">\(\longrightarrow\)</span> <em>Создать слой</em> <span class="math inline">\(\longrightarrow\)</span> <em>Создать слой GeoPackage</em>.</p>
+<p>Далее в открывшемся окне следует указать характеристики слоя:</p>
+<ul>
+<li><p>база данных - это путь к файлу, в котором будет храниться слой;</p></li>
+<li><p>имя таблицы - название слоя, которое будет отображаться в панели слоев;</p></li>
+<li><p>тип геометрии - нам нужны точечные объекты;</p></li>
+<li><p>система координат - можно оставить географическую систему координат по умолчанию, она будет совпадать с системой координат данных, скачанных из OSM;</p></li>
+<li><p>список полей, который будет включать два обязательных для нас поля - <strong>name</strong> (название магазина, текстовый формат данных) и <strong>area</strong> (площадь магазина в метрах квадратных, целое число).</p></li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/Снимок экрана 2025-02-21 в 17.15.27.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+<p>После создания слоя, его необходимо будет сделать редактируемым и нарисовать на карте несколько точек в разных частях исследуемой территории и заполнить для них атрибутивные данные - название магазина и площадь.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Внимание
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Названия точек должны быть уникальными, в противном случае модель не будет работать.</p>
+</div>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/Снимок экрана 2025-02-24 в 13.04.14.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+</section>
+<section id="geomodel" class="level1 section">
+<h1 class="section">Построение геомодели</h1>
+<p>В этой работе мы будем оценивать вероятность посещения того или иного магазина, исходя из их доступности и площади (как прокси-метрики разнообразия ассортимента), с использованием гравитационной модели Хаффа.</p>
+<p><span class="math display">\[P_{ij} = \frac{\frac{S_{j}}{T^\lambda_{ij}}}{\sum_{j}^{n}\frac{S_{j}}{T^\lambda_{ij}}}\]</span></p>
+<ul>
+<li><span class="math inline">\(P_{ij}\)</span> - вероятность того, что покупатель из локации <span class="math inline">\(i\)</span> пойдет в магазин <span class="math inline">\(j\)</span>;</li>
+<li><span class="math inline">\(S_{j}\)</span> - площадь магазина <span class="math inline">\(j\)</span>;</li>
+<li><span class="math inline">\(T_{ij}\)</span> - время/расстояние, которое нужно преодолеть, чтобы попасть в магазин;</li>
+<li><span class="math inline">\(\lambda\)</span> - параметр, отражающий влияние времени в пути на покупателя.</li>
+</ul>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Внимание
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Мы воспользуемся упрощенной моделью, приняв параметр <span class="math inline">\(\lambda\)</span> равным единице, так как у нас нет подробных данных о предпочтениях покупателей.</p>
+</div>
+</div>
+<p>Для построения моделей будем использовать редактор моделей.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Дополнительно
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Редактор моделей позволяет выстроить последовательный процесс вычислений из цепочки операций с помощью простого графического интерфейса.</p>
+<p>Полученная геомодель позволяет автоматизировать вычисления и избежать вывода промежуточных результатов.</p>
+<p>Подробнее про построение геомоделей можно в <a href="https://docs.qgis.org/3.34/en/docs/user_manual/processing/modeler.html">документации</a></p>
+</div>
+</div>
+<p>Открыть редактор моделей можно из строки меню <em>Анализ данных</em> <span class="math inline">\(\longrightarrow\)</span> <em>Конструктор моделей</em> или по клику на кнопку <em>Модели</em> в Панели инструментов анализа.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/Снимок экрана 2025-02-24 в 13.07.26.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+<p>В открывшемся новом окне основная часть предназначена для отображения модели в графическом виде, слева панель данных и алгоритмов (переключаются по вкладкам внизу панели), свойства и переменные модели, а также история команд.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/Снимок экрана 2025-02-24 в 13.08.29.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+<section id="входные-данные" class="level2">
+<h2 class="anchored" data-anchor-id="входные-данные">Входные данные</h2>
+<p>В первую очередь зададим для нашей модели входные данные. В нашем случае все входные данные будут представлены в виде векторных слоев:</p>
+<ul>
+<li><p>здания - обязательный параметр, полигоны;</p></li>
+<li><p>магазины - обазятельный параметр, точки;</p></li>
+<li><p>улично-дорожная сеть - обязательный параметр, линии.</p></li>
+</ul>
+<p>Обязательный параметр - это тот, без включения которого в исходные данные запуск модели осуществляться не будет.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Внимание
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Желательно называть входные данные буквами английского алфавита, так как иногда они могут не добавляться в модель или работать некорректно при использовании кириллицы.</p>
+</div>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/Снимок экрана 2025-02-24 в 13.15.30.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+<p>Входные данные в модели обозначаются зеленым плюсом перед названием.</p>
+<p><img src="images/clipboard-874230571.png" class="img-fluid"></p>
+<p>Так как все наши слои в географической системе координат для последующего расчета расстояний необходимо их перепроецировать в прямоугольную систему координат (так как данные представлены на Санкт-Петербурга, воспользуемся системой координат <em>EPSG: 32636 - WGS 84 / UTM zone 36N</em>).</p>
+<p><img src="images/clipboard-3427236269.png" class="img-fluid"></p>
+<p>В модели появится первый шаг, соединенный с одним из входных параметров.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/clipboard-3669572999.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+<p>Этот шаг нужно добавить для всех входных данных.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/clipboard-1273476849.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="900"></p>
+</figure>
+</div>
+</section>
+<section id="расчет-матрицы-старт-назначение-между-потребителями-и-сервисами" class="level2">
+<h2 class="anchored" data-anchor-id="расчет-матрицы-старт-назначение-между-потребителями-и-сервисами">Расчет матрицы старт-назначение между потребителями и сервисами</h2>
+<p>Также как и для анализа размещения-распределения нам необходимо преобразовать полигональные здания в точечные объекты с помощью инструмента <em>Центроид</em>.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/clipboard-3152366718.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="1000"></p>
+</figure>
+</div>
+<p>Для того, чтобы воспользоваться результатом, полученным на предыдущем этапе под словами <em>Исходный слой</em> нужно выбрать параметр <em>Вывод алгоритма</em>.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/clipboard-3686346028.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+<p>Далее мы можем непосредственно рассчитать матрицу старт-назначение с использованием плагина QNEAT3.</p>
+<p><img src="images/clipboard-3975108655.png" class="img-fluid"></p>
+<p>Параметры здесь указываются аналогично тому, как указывались просто в инструменте для построения матрицы.</p>
+<p>Так как нам здесь нет необходимости впоследствии визуально отображать пути покупателей от жилых домов до магазинов, то строить матрицу будем просто в виде таблицы на основе двух слоев.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Внимание
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Идентификаторы объектов стартовых и конечных точек должны быть уникальными (внутри слоя естественно).</p>
+<p>В нашем случае для стартовых точек (ячеек со значениями плотности населения) будет использовать <em>fid</em>, который всегда будет уникальным и есть в этом слое, а для магазинов будет использоваться поле имени <em>name</em> (поэтому нам очень важно, чтобы в этом слое названия магазинов были уникальными).</p>
+</div>
+</div>
+<p>Полученный результат будет представлен только в виде <strong>таблицы без атрибутов</strong>, которую можно присоединить к одному из векторных слоев.</p>
+<p>Так как мы будет рассчитывать вероятность посещения того или иного магазина для каждого из жилых домов, то основной расчет вероятности будет осуществляться внутри атрибутов жилых домов. Поэтому значения времени или расстояния из матрицы старт-назначение присоединим к слою жилых домов.</p>
+<p>Присоединение будет осуществляться по совпадающим значениям полей: у исходного слоя есть <em>osm_id</em>, а в матрице есть <em>origin_id</em> - идентификатор стартовой точки, который был взят из <em>osm_id</em> исходного слоя.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/Снимок экрана 2025-02-24 в 13.36.08.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+</section>
+<section id="расчет-вероятности-посещения-конкретного-сервиса" class="level2">
+<h2 class="anchored" data-anchor-id="расчет-вероятности-посещения-конкретного-сервиса">Расчет вероятности посещения конкретного сервиса</h2>
+<p>Если мы обратимся к формуле в начале раздела, то увидим, что в формуле используется не только расстояние между потребителями и сервисом, но и площадь сервиса.</p>
+<p>Поэтому атрибуты магазинов тоже следует присоединить к слою жилых домов.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/Снимок экрана 2025-02-24 в 13.50.17.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+<p>Присоединение здесь будет осуществляться по названию магазина к результатам предыдущего шага, поэтому в качестве связыющих полей будет использовано <em>destination_id</em> и поле <em>name</em> слоя с магазинами.</p>
+<p>Обратите внимание, что тип объединения здесь один-ко-многим, то есть если с объектом исходного слоя совпадет более одного объекта присоединяемого слоя, то исходный объект будет продублирован и к нему присоединен атрибут второго совпавшего объекта.</p>
+<p>В нашем случае это необходимо так как нужно рассчитать вероятность для всех магазинов и, если мы присоединим только первый совпавший по атрибуту, то в расчет мы сможем включить только его и таким образом получим безальтернативную вероятность посещения только одного магазина.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Дополнительно
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Для того, чтобы не запутаться в однотипных операциях в одинаковыми названиями, вы можете менять его в графе <em>Описание</em> (<em>Description</em>).</p>
+</div>
+</div>
+<p>Следующим шагом рассчитаем вероятности, который может быть сделан в два этапа, а может быть одним.</p>
+<p>При расчете в два этапа сначала необходимо вычислить числитель дроби <span class="math inline">\(\frac{S_{j}}{T^\lambda_{ij}}\)</span>, разделив площадь каждого магазина на время в пути до него с помощью калькулятора полей. После чего рассчитать знаменатель <span class="math inline">\(\sum_{j}^{n}\frac{S_{j}}{T^\lambda_{ij}}\)</span>.</p>
+<p>Для этого необходимо фактически просуммировать все полученные нами на предыдущем шаге значения, но только для каждого жилого дома и соответствующих магазинов. То есть нам нужно просуммировать не все значения по столбцу, а только значения соответствующие одному жилому дому.</p>
+<p>Знаменатель может быть рассчитан с использованием условия группировки в выражении.</p>
+<p>Воспользуемся калькулятором полей и редактором выражений. Так как расчет будет осуществляться в один шаг, выражение приобретет вид:</p>
+<pre><code>("площадь"/"total_cost")/sum("площадь"/"total_cost",group_by:="origin_id")</code></pre>
+<p><img src="images/clipboard-2086990449.png" class="img-fluid"></p>
+<div class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Предупреждение
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Будьте внимательны с названиями полей в калькуляторе: они должны быть написаны точно так же, как в вашей таблице атрибутов. Если они не будут совпадать, то расчет осуществлен не будет.</p>
+</div>
+</div>
+<p>Полученный результат можно присоединить в качестве атрибутов к ячейкам плотности населения, чтобы рассчитать количество потенциальных покупателей и показать его на карте.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/clipboard-1114071058.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="1000"></p>
+</figure>
+</div>
+<p>Само же число покупателей может быть рассчитано по формуле: <span class="math display">\[
+E_{ij} = P_{ij}C_{i}
+\]</span></p>
+<p>где <span class="math inline">\(E_{ij}\)</span> - предполагаемое количество покупателей из локации <span class="math inline">\(i\)</span>, которые пойдут в магазин <span class="math inline">\(j\)</span>;</p>
+<p><span class="math inline">\(P_{ij}\)</span> - вероятность того, что покупатель из локации <span class="math inline">\(i\)</span> пойдет в магазин <span class="math inline">\(j\)</span>;</p>
+<p><span class="math inline">\(C_{i}\)</span> - количество покупателей в локации <span class="math inline">\(i\)</span>.</p>
+<p><img src="images/clipboard-1166519140.png" class="img-fluid"></p>
+<p>Полученная схема модели показана на рисунке ниже.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/clipboard-2661046429.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="1000"></p>
+</figure>
+</div>
+<p>Перед запуском модель можно проверить командой из строки меню <em>Модель</em> <span class="math inline">\(\longrightarrow\)</span> <em>Проверить модель</em>.</p>
+<p>Запуск модели осуществляется либо по кнопке <img src="images/Снимок экрана 2025-02-24 в 15.25.27.png" class="img-fluid" width="21">, либо из строки меню <em>Модель</em> <span class="math inline">\(\longrightarrow\)</span> <em>Запустить модель.</em></p>
+<p>После запуска модель выглядит практически как стандартный инструмент из Панели инструментов анализа.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/clipboard-1525892751.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="900"></p>
+</figure>
+</div>
+<p>Полученная в итоге таблица атрибутов позволяет увидеть повторяемость каждого из зданий (обратите внимание, что в колонке <em>origin_id</em> значения повторяются столько раз, сколько у вас было магазинов в примере):</p>
+<ul>
+<li><p><em>origin_id</em> - идентификатор дома из исходных данных;</p></li>
+<li><p><em>destination_id</em> - идентификатор (название) магазина из исходных данных;</p></li>
+<li><p><em>total_cost</em> - расстояние от конкретного дома до магазина из матрицы старт-назначение;</p></li>
+<li><p><em>area</em> - площадь магазина из исходных данных;</p></li>
+<li><p><em>area_time -</em> отношение площади магазина к расстоянию, рассчитанное на промежуточном этапе;</p></li>
+<li><p><em>summa -</em> сумма всех предыдущих значение для каждого дома;</p></li>
+<li><p><em>probability</em> - вероятность посещения конкретного магазина жителями этого дома.</p></li>
+</ul>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Дополнительно
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Проверить корректность своих расчетов можно проверив два условия:</p>
+<ul>
+<li><p>вероятность (последняя колонка может находиться только в пределах от нуля до единицы);</p></li>
+<li><p>сумма вероятностей для каждого дома должна равняться единице.</p></li>
+</ul>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Дополнительно
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>В качестве финального этапа можем разделить полученный в итоге слой так, чтобы для каждого из магазинов был свой отдельный слой.</p>
+<p>Для этого воспользуемся инструментом <em>Разбить векторный слой</em> и разобьем его на отдельные слои по идентификаторам магазинов.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/Снимок экрана 2025-02-24 в 15.40.16.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+<p>Здесь результат тоже будет выводиться как конечный.</p>
+<p>Таким образом, по результату запуска модели будет выводиться слой, содержащий вероятности по всем домам и магазинам, и слои, содержащие вероятности по отдельным магазинам (этих слоев будет столько, сколько было магазинов в исходном слое).</p>
+<p>Окно запуска модели немного изменится: в нем появится возможность выбора папки для сохранения наших результатов разделения слоя.</p>
+</div>
+</div>
+<p>Полученная модель может быть сохранена как отдельный файл в формате <em>.model3</em> (<em>Модель</em> <span class="math inline">\(\longrightarrow\)</span> <em>Сохранить модель как</em>) или как часть проекта (<em>Модель</em> <span class="math inline">\(\longrightarrow\)</span> <em>Сохранить модель в проекте).</em></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/Снимок экрана 2025-02-24 в 15.49.45.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
 
 
+</section>
 </section>
 
 
