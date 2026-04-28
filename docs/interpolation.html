@@ -139,10 +139,553 @@
 </div>
 
 </section>
+<section>
+<section id="что-такое-интерполяция" class="title-slide slide level1 center">
+<h1>Что такое интерполяция?</h1>
+<p>Интерполяция - это метод восстановления непрерывных поверхностей по набору дискретных измерений или получение промежуточных значений на основе известного набора данных.</p>
+<p>Например, у вас есть измеренные значения высот в определенных точках, а вы хотите получить по ним цифровую модель рельефа с помощью интерполяции.</p>
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>На заметку</strong></p>
+</div>
+<div class="callout-content">
+<p>Кроме интерполяции еще есть экстраполяция - получение прогнозных значений за пределами известных данных.</p>
+</div>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<blockquote>
+<p>В географии обычно имеют дело с двумерным случаем интерполяции — когда измерения проведены в некоторых географических локациях, и по ним нужно восстановить непрерывную картину поля распределения величины. В общем случае неизвестно, как ведет себя исследуемое явление между точками, поэтому существует бесчисленное множество вариантов интерполяции.<a href="#/footnotes" class="footnote-ref" id="fnref1" role="doc-noteref" data-footnote-href="#/fn1" onclick=""><sup>1</sup></a></p>
+</blockquote>
+<p>А еще интерполяцию не нужно путать с аппроксимацией. Интерполяция позволяет получить функцию, которая точно проходит через точки с известными значениями, а аппроксимация дает только приближенные значения.</p>
+<aside></aside></section>
+<section class="slide level2">
+
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/clipboard-612842822.png" width="800"></p>
+<figcaption>Источник: Практикум по компьютерным технологиям на языке программирования python3 https://fadeevlecturer.github.io/python_lectures/notebooks/scipy/interpolation_approx.html</figcaption>
+</figure>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/clipboard-2623712989.png" class="quarto-figure quarto-figure-center" width="532"></p>
+</figure>
+</div>
+</div></div>
+</section>
+<section class="slide level2">
+
+<p>Все методы интерполяции могут быть разделены на две группы:</p>
+<ul>
+<li><p><strong>детерминистские/детерминистические</strong> - это методы интерполяции, основанные на заданных зависимостях и близости наблюдений;</p></li>
+<li><p><strong>геостатистические</strong> - методы, учитывающие пространственную автокорреляцию и позволяющие построить поверхность на основе статистической зависимости.</p></li>
+</ul>
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>На заметку</strong></p>
+</div>
+<div class="callout-content">
+<p>Методы первой группы значительно проще в использовании и интерпретации результатов, но не учитывают поведение величины между точками, которое определяется автокорреляцией.</p>
+<p>Методы второй группы сложнее, но могут давать более точные результаты.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="метод-ближайшего-соседа" class="slide level2">
+<h2>Метод ближайшего соседа</h2>
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>На заметку</strong></p>
+</div>
+<div class="callout-content">
+<p>Все методы интерполяции в той или иной степени основаны на идее, что значение интерполянта в точке должно в большей степени зависеть от значений данных в близлежащих точках, чем в удаленных. В интерполяции по принципу «естественного соседа» идея «соседства» в пространственной конфигурации формализуется естественным образом и становится количественной, а свойства метода зависят от, по-видимому, новой геометрической тождественности, связывающей эту количественную меру «соседства» с положением<a href="#/footnotes" class="footnote-ref" id="fnref2" role="doc-noteref" data-footnote-href="#/fn2" onclick=""><sup>2</sup></a>.</p>
+</div>
+</div>
+</div>
+<p>В основу метода ближайшего соседа положены полигоны Вороного, полигоны Тиссена или тесселяция Дирихле.</p>
+<aside></aside></section>
+<section class="slide level2">
+
+<h3 id="полигоны-вороного">Полигоны Вороного</h3>
+<p>Разбиение плоскости с точками на <a href="https://mathworld.wolfram.com/ConvexPolygon.html">выпуклые многоугольники</a> таким образом, что каждый <a href="https://mathworld.wolfram.com/Polygon.html">многоугольник</a> содержит <a href="https://mathworld.wolfram.com/ExactlyOne.html">ровно одну</a> образующую точку, и каждая точка в данном многоугольнике находится ближе к своей образующей точке, чем к любой другой<a href="#/footnotes" class="footnote-ref" id="fnref3" role="doc-noteref" data-footnote-href="#/fn3" onclick=""><sup>3</sup></a>.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/clipboard-4048106070.png" width="1333"></p>
+<figcaption>Источник: https://gwlucastrig.github.io/TinfourDocs/NaturalNeighborIntro/index.html</figcaption>
+</figure>
+</div>
+<aside></aside></section>
+<section class="slide level2">
+
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Простое объяснение</strong></p>
+</div>
+<div class="callout-content">
+<p>Пусть есть карта города, на которой точками обозначены почтовые отделения. Человек хочет отправить письмо, и он пойдёт на ближайшую почту. Ему интересно знать, какое отделение ближе, для любой точки города — необходимость отправить письмо может наступить неожиданно. Для этого он может взять карту и расчертить её на ячейки так, чтобы внутри каждой ячейки находилось только одно отделение, а для всех остальных точек ячейки именно эта почта была ближайшей. Полученная картинка и будет диаграммой Вороного для точек-почт<a href="#/footnotes" class="footnote-ref" id="fnref4" role="doc-noteref" data-footnote-href="#/fn4" onclick=""><sup>4</sup></a>.</p>
+</div>
+</div>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/clipboard-2465747324.png" width="814"></p>
+<figcaption>Источник: https://cartetika.ru/tpost/2ocvc6xgj1-diagramma-voronogo-i-kak-sdelat-ee-v-qgi</figcaption>
+</figure>
+</div>
+<aside></aside></section>
+<section class="slide level2">
+
+<p>При интерполяции принимается, что внутри каждого полигона значение постоянно.</p>
+
+<img data-src="images/clipboard-3493206856.png" class="r-stretch quarto-figure-center"><p class="caption">Источник: Самсонов Т.Е. Визуализация и анализ географических данных на языке R. М.: Географический факультет МГУ, 2024. DOI: 10.5281/zenodo.901911</p></section>
 <section class="slide level2">
 
 
+<img data-src="images/clipboard-3569286455.png" width="1487" class="r-stretch quarto-figure-center"><p class="caption">Источник: Самсонов Т.Е. Визуализация и анализ географических данных на языке R. М.: Географический факультет МГУ, 2024. DOI: 10.5281/zenodo.901911</p></section>
+<section id="интерполяция-на-базе-триангуляции" class="slide level2">
+<h2>Интерполяция на базе триангуляции</h2>
+<p>В этом случае на первом этапе строится триангуляционная сеть (как правило, на основе триангуляции Делоне), после чего для каждого из полученных треугольников выстраивается плоскость. Из полученного набора плоскостей формируется общая поверхность.</p>
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>На заметку</strong></p>
+</div>
+<div class="callout-content">
+<p><strong>Подразбиение Делоне множества точек</strong> — такое разбиение выпуклой оболочки множества точек на множество выпуклых фигур, что в окружности, описанной вокруг любой из фигур, не находится никаких точек из множества.</p>
+<p><strong>Триангуляция Делоне множества точек</strong> — триангуляция, являющаяся подразбиением Делоне.</p>
+</div>
+</div>
+</div>
+</section>
+<section class="slide level2">
 
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/clipboard-1334750905.png" width="900"></p>
+<figcaption>Источник: https://ru.wikipedia.org/wiki/Триангуляция_Делоне</figcaption>
+</figure>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/clipboard-3328390395.png" width="900"></p>
+<figcaption>Источник: https://habr.com/ru/articles/828610/</figcaption>
+</figure>
+</div>
+</div></div>
+</section>
+<section class="slide level2">
+
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/clipboard-3614750676.png" width="1120"></p>
+<figcaption>Источник: Самсонов Т.Е. Визуализация и анализ географических данных на языке R. М.: Географический факультет МГУ, 2024. DOI: 10.5281/zenodo.901911</figcaption>
+</figure>
+</div>
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Важно</strong></p>
+</div>
+<div class="callout-content">
+<p>В том случае, если вы работаете с данными рельефа, то рекомендуется использовать методы на основе триангуляции. Так как при использовании таких методов интерполяция происходит в пределах тех значений, которые известны.</p>
+<p>Так вы получите <em>триангуляционную модель рельефа</em> - описание рельефа в виде набора высотных отметок ли отметок глубин в узлах треугольников - элементов триангуляции Делоне и ее обобщений<a href="#/footnotes" class="footnote-ref" id="fnref5" role="doc-noteref" data-footnote-href="#/fn5" onclick=""><sup>5</sup></a>.</p>
+</div>
+</div>
+</div>
+<aside></aside></section>
+<section class="slide level2">
+
+
+<img data-src="images/clipboard-834504612.png" class="r-stretch quarto-figure-center"><p class="caption">Источник: Самсонов Т.Е. Визуализация и анализ географических данных на языке R. М.: Географический факультет МГУ, 2024. DOI: 10.5281/zenodo.901911</p></section>
+<section id="метод-обратно-взвешенных-расстояний-inverse-distance-weights---idw" class="slide level2">
+<h2>Метод обратно взвешенных расстояний (Inverse distance weights - IDW)</h2>
+<p>В этом методе значение показателя в произвольной точке будет равно средневзвешенной сумме значений в исходных точках.</p>
+<p><span class="math display">\[
+z(p)=\begin{cases}
+\dfrac{\Sigma^N_{i=1}w_i(p)z_i}{\Sigma^N_{i=1}w_i(p)} &amp; \quad \text{если $d(p,p_i) \neq0$ для всех $i$}\\
+z_i &amp; \quad \text{если $d(p,p_i) = 0$ хотя бы для одного $i$}
+\end{cases}
+\]</span></p>
+<p>где <span class="math inline">\(w_i(p)=|p-p_i|^{-p}\)</span> - весовая функция.</p>
+<p>Весовая функция может быть вычислена, например, по методу Шепарда:</p>
+<p><span class="math display">\[
+w_i(p)=d_i^{-2}/\sum_{j=1}^{n}d_i^{-2}
+\]</span></p>
+</section>
+<section class="slide level2">
+
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/clipboard-2040540761.png" class="quarto-figure quarto-figure-center" width="910"></p>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/clipboard-2864508211.png" width="879"></p>
+<figcaption>Источник: Самсонов Т.Е. Визуализация и анализ географических данных на языке R. М.: Географический факультет МГУ, 2024. DOI: 10.5281/zenodo.901911</figcaption>
+</figure>
+</div>
+</section>
+<section class="slide level2">
+
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Внимание</strong></p>
+</div>
+<div class="callout-content">
+<p>Большим недостатком метода является то, что он может давать ложные экстремумы и порождать значения, находящиеся за пределами измеренных.</p>
+</div>
+</div>
+</div>
+
+<img data-src="images/clipboard-1586006153.png" class="quarto-figure quarto-figure-center r-stretch" width="1277"></section>
+<section class="slide level2">
+
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Важно</strong></p>
+</div>
+<div class="callout-content">
+<p>Основным параметром при использовании метода обратных взвешенных расстояний является степень весовой функции: при небольших ее значениях вы получите более острые вершины, а при ее увеличении - поверхность будет становиться более платообразной.</p>
+<p>После определенного порога значения степени весовой функции поверхность станет приближенной к ступенчатой поверхности, полученной при интерполяции методом ближайшего соседа.</p>
+</div>
+</div>
+</div>
+
+<img data-src="images/clipboard-755236505.png" class="quarto-figure quarto-figure-center r-stretch" width="980"></section>
+<section class="slide level2">
+
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><img data-src="images/clipboard-3592982448.png"></p>
+</div><div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/clipboard-1465104664.png" width="879"></p>
+<figcaption>Spatial analysis of subway passenger traffic in Saint Petersburg T Baltyzhakova, A Romanchikov - Geodesy and Cartography, 2021</figcaption>
+</figure>
+</div>
+</div></div>
+</section>
+<section id="метод-радиальных-базисных-функций-radial-basis-functions---rbf" class="slide level2">
+<h2>Метод радиальных базисных функций (Radial Basis Functions - RBF)</h2>
+<p>При использовании радиальных базисных функций значение в произвольной точке <span class="math inline">\(p\)</span> рассчитывается на основе взвешенного среднего значения радиальной функции <span class="math inline">\(\phi\)</span>.</p>
+<p><span class="math display">\[
+Z(p)=\sum^{n}_{i=1}\lambda_i\phi(||p-p_i||)
+\]</span></p>
+<p>Коэффициенты <span class="math inline">\(\lambda_i\)</span> находятся заранее на основе <span class="math inline">\(n\)</span> и условия <span class="math inline">\(Z(p_i)=z_i\)</span>.</p>
+<p>В этом методе могут использоваться различные функции, что делает его достаточно гибким.</p>
+</section>
+<section class="slide level2">
+
+<p>Однако, как и метод обратных взвешенных расстояний, метод радиальных базисных функций может давать значения за пределами измеренных величин.</p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/clipboard-3171786514.png" width="650"></p>
+<figcaption>Пример профиля обратно взвешенных расстояний<a href="#/footnotes" class="footnote-ref" id="fnref6" role="doc-noteref" data-footnote-href="#/fn6" onclick=""><sup>6</sup></a></figcaption>
+</figure>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/clipboard-991540232.png" width="621"></p>
+<figcaption>Пример профиля радиальной базисной функции</figcaption>
+</figure>
+</div>
+</div></div>
+<p>Этот недостаток может быть отчасти нивелирован при использовании сплайнов минимальной кривизны (<em>thin plate spline — TPS)</em>, которые позволят получить поверхность, проходящую через все точки с известным значением и минимальной кривизной между ними. Это позволит избежать резких изменений, которые характерны для метода обратных взвешенных расстояний.</p>
+<aside></aside></section>
+<section class="slide level2">
+
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/clipboard-3983403252.png" width="1120"></p>
+<figcaption>Источник: Самсонов Т.Е. Визуализация и анализ географических данных на языке R. М.: Географический факультет МГУ, 2024. DOI: 10.5281/zenodo.901911</figcaption>
+</figure>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/clipboard-3248511420.png" class="quarto-figure quarto-figure-center" width="1389"></p>
+</figure>
+</div>
+</div></div>
+</section>
+<section id="кригинг" class="slide level2">
+<h2>Кригинг</h2>
+<p>Кригинг является методом геостатистической интерполяции.</p>
+<p>Метод назван по имени Дэниэла Криге - южноафриканского геолога, который занимался оценкой запасов месторождений.</p>
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>На заметку</strong></p>
+</div>
+<div class="callout-content">
+<p>Геостатистические методы основаны на наличии пространственной автокорреляции, то есть связи наблюдаемых в различных местах значений.</p>
+<p>Пространственная автокорреляция основана на том, что существует связь между значениями близко расположенных наблюдениями.</p>
+</div>
+</div>
+</div>
+<p>Основная идея кригинга в связывании дисперсии наблюдаемых значений с расстоянием до определенных точек.</p>
+</section>
+<section class="slide level2">
+
+<p>Базируется такая оценка на полудисперсии: <span class="math display">\[\gamma(h)=\dfrac{1}{2}E([z(x+h)-z(x)]^2)=\dfrac{1}{2N}\sum_{i=1}^{N}[z(x_i+h)-z(x_i)]^2\]</span> где <span class="math inline">\(x\)</span> - конкретная точка, <span class="math inline">\(h\)</span> - расстояние между точками или лаг, <span class="math inline">\(x+h\)</span> - другая точка на расстоянии <span class="math inline">\(h\)</span> от точки <span class="math inline">\(x\)</span>, <span class="math inline">\(z(x)\)</span> и <span class="math inline">\(z(x+h)\)</span> - значения в этих точках, <span class="math inline">\(E\)</span> - среднее квадратов разностей (отсюда и преобразование формулы), <span class="math inline">\(N\)</span> - количество пар наблюдений, находящихся на расстоянии <span class="math inline">\(h\)</span>, <span class="math inline">\(x_i\)</span> - <span class="math inline">\(i\)</span>-ая позиция среди <span class="math inline">\(N\)</span> пар.</p>
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Важно</strong></p>
+</div>
+<div class="callout-content">
+<p>Так как рассчитываемая величина равна половине математического ожидания квадратов разностей, поэтому она называется <strong><em>полудисперсией</em></strong>.</p>
+</div>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<p>В случае реальных наблюдений, как правило, практически нет пар, расположенных на конкретном расстоянии <span class="math inline">\(h\)</span> друг от друга, поэтому вместо конкретного расстояния используются диапазоны расстояний. То есть пары наблюдений, расстояние между которыми попало в определенный интервал будут считаться расположенными друг от друга на среднем для этого интервала расстоянии.</p>
+
+<img data-src="images/clipboard-3535193312.png" class="r-stretch quarto-figure-center"><p class="caption">Источник: https://desktop.arcgis.com/ru/arcmap/latest/tools/3d-analyst-toolbox/how-kriging-works.htm</p></section>
+<section class="slide level2">
+
+<p>На первом этапе кригинга необходимо построить график эмпирической полудисперсии, на которой показывается зависимость полудисперсии от лага (расстояния) между значениями.</p>
+
+<img data-src="images/clipboard-3585520020.png" class="quarto-figure quarto-figure-center r-stretch" width="644"></section>
+<section class="slide level2">
+
+<div class="callout callout-caution callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Предупреждение</strong></p>
+</div>
+<div class="callout-content">
+<p>В некоторых источниках полудисперсия и полувариограмма используются как тождественные понятия, хотя полудисперсия - это числовое выражение вариации, а полувариограмма - график, показывающий полудисперсию.</p>
+</div>
+</div>
+</div>
+<p>В качестве исходных данных для построения полувариограммы используются сведения о местоположении наблюдений и значения наблюдений. На основе местоположения наблюдений рассчитывается лаг между ними как матрица расстояний между всеми парами точек.</p>
+<p>На основе расстояний и значений наблюдений рассчитываются квадраты разности, а далее среднее значение квадратов разности для определенных интервалов.</p>
+</section>
+<section class="slide level2">
+
+<p>В первую очередь имеют значение отдельные элементы графика, например, то, где вариограмма пересекается с осью Y, то есть значение полудисперсии при нулевом расстоянии. Это значение называется <em>самородком (nugget)</em>. Как правило, если существует значительная разница между наблюдениями, расположенными в одном месте, это может показывать наличие ошибки измерения.</p>
+<p>Второй важный элемент полувариограммы - это <em>порог (sill)</em>, то есть то значение, при котором график выходит на плато, а расстояние, на котором этот порог достигается называется <em>размахом (range)</em>. Фактически размах показывает расстояние, при достижении которого значения наблюдений перестают быть связанными друг с другом.</p>
+</section>
+<section class="slide level2">
+
+<p>Сам факт наличия порога и размаха говорит о том, что расстояние оказывает влияние на дисперсию значений: чем больше расстояние, тем выше дисперсия, то есть тем сильнее несходство двух наблюдений.</p>
+
+<img data-src="images/clipboard-4178988145.png" width="512" class="r-stretch quarto-figure-center"><p class="caption">Источник: https://desktop.arcgis.com/ru/arcmap/latest/tools/3d-analyst-toolbox/how-kriging-works.htm</p></section>
+<section class="slide level2">
+
+<p>Кроме полудисперсии в качестве количественной метрики сходства наблюдений используется ковариация между парами: <span class="math display">\[C(h)=E[(z(x)-\mu)(z(x+h)-\mu)]=\dfrac{1}{N}\sum_{i=1}^{N}z(x_i)z(x_i+h)-\mu^2\]</span> где <span class="math inline">\(\mu\)</span> - среднее наблюдаемое значение при лаге (расстоянии) <span class="math inline">\(h\)</span>.</p>
+
+<img data-src="images/clipboard-2599044845.png" class="quarto-figure quarto-figure-center r-stretch" width="691"></section>
+<section class="slide level2">
+
+<p>Тенденции изменения полувариограммы и ковариации противоположны друг другу. С учетом предположения, что среднее и дисперсия наблюдаемой величины постоянны в пространстве, то можно вывести взаимосвязь между величинами: <span class="math display">\[C(0)=E[(z(x)-\mu)^2]= var[z(x)],\: \gamma(h)=C(0)-C(h)\]</span> где <span class="math inline">\(var\)</span> - дисперсия данных.</p>
+<p>Далее задача интерполяции с использованием кригинга сводится к математической оптимизации функции.</p>
+</section>
+<section class="slide level2">
+
+<p>Наиболее широко распространенными моделями аппроксимации полувариограммы являются (во всех уравнениях <span class="math inline">\(c_0, \ c, \ a\)</span> - самородок, порог и размах соответственно):</p>
+<ul>
+<li><p><em>линейная модель</em>, выходящая на пороговый уровень по прямой с постоянным углом наклона <span class="math display">\[\gamma(h)=\begin{cases} c_0+c\left(\dfrac{h}{a}\right) &amp; \quad 0 \leq h \leq a \\ c_0+c &amp; \quad h&gt;a \\ 0 &amp; \quad h=0\end{cases}\]</span></p></li>
+<li><p><em>сферическая модель</em>, в которой порог достигается на расстоянии размаха, при этом угол наклона при приближении к пороговому значению уменьшается <span class="math display">\[\gamma(h)=\begin{cases} c_0+c\left[\dfrac{3h}{2a}-\dfrac{1}{2}\left(\dfrac{h}{a}\right)^3\right] &amp; \quad 0 \leq h \leq a \\ c_0+c &amp; \quad h&gt;a \\ 0 &amp; \quad h=0\end{cases}\]</span></p></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<ul>
+<li><p><em>экспоненциальная модель</em>, которая аналогична сферической модели с той лишь разницей, что на расстоянии размаха в ней достигается только 95% от порогового значения <span class="math display">\[\gamma(h)=\begin{cases} c_0+c\left[1-e^\left(\dfrac{h}{a}\right)\right] &amp; \quad h&gt;0 \\ 0 &amp; \quad h=0\end{cases}\]</span></p></li>
+<li><p><em>гауссова модель</em> не достигает порога на расстоянии размаха <span class="math display">\[\gamma(h)=\begin{cases} c_0+c\left[1-e^\left(\dfrac{h^2}{a^2}\right)\right] &amp; \quad h&gt;0 \\ 0 &amp; \quad h=0\end{cases}\]</span></p></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<ul>
+<li><em>степенная модель</em>, в которой параметр <span class="math inline">\(\lambda\)</span> в диапазоне от 0 до 2 может быть подобран под конкретные данные <span class="math display">\[\gamma(h)=\begin{cases} c_0+c|h|^\lambda &amp; \quad h&gt;0 \\ 0 &amp; \quad h=0\end{cases}\]</span></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p>Выделяют два основных вида кригинга:</p>
+<ul>
+<li><p><em>обыкновенный или обычный (ordinary)</em> кригинг, в котором среднее значени считается неизвестным и постоянным только в окрестностях точки оценивания;</p></li>
+<li><p><em>простой (simple)</em> кригинг, в котором среднее значение будет постоянным во всей области.</p></li>
+</ul>
+<p>В общем случае кригинга результатом будет являться вычисленное значение в любой произвольной точке с учетом весовых коэффициентов для близких точек: <span class="math display">\[\hat z(x_0)=\sum_{i}\lambda z(x_i)\]</span></p>
+<p>С учетом предположения, что <span class="math inline">\(\sum_{i}\lambda_i=1\)</span>.</p>
+<p>От вида кригинга будет зависеть способ вычисления весовой матрицы.</p>
+</section>
+<section id="аппроксимационные-методы" class="slide level2">
+<h2><strong>Аппроксимационные методы</strong></h2>
+<p>При использовании аппроксимационных методов определяются тренды изменения в данных: глобальный и локальный (в окрестностях каждой точки).</p>
+<p>В этом случае полученная поверхность не будет проходить через все точки.</p>
+<p>Чаще всего в аппроксимационных методах используются поверхности разного порядка:</p>
+<ul>
+<li><p>0 порядок - горизонтальная плоскость;</p></li>
+<li><p>1 порядок - наклонная плоскость;</p></li>
+<li><p>2 и 3 порядок - квадратичная и кубическая поверхность соответственно.</p></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="глобальные-тренды">Глобальные тренды</h3>
+<div class="columns">
+<div class="column" style="width:30%;">
+<p>Поверхность 0 порядка</p>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/clipboard-3662891160.png" width="600"></p>
+<figcaption>Источник: Самсонов Т.Е. Визуализация и анализ географических данных на языке R. М.: Географический факультет МГУ, 2024. DOI: 10.5281/zenodo.901911</figcaption>
+</figure>
+</div>
+</div><div class="column" style="width:30%;">
+<p>Поверхность 1 порядка</p>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/clipboard-3013416821.png" class="quarto-figure quarto-figure-center" width="600"></p>
+</figure>
+</div>
+</div><div class="column" style="width:30%;">
+<p>Поверхность 2 порядка</p>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/clipboard-2459324398.png" class="quarto-figure quarto-figure-center" width="600"></p>
+</figure>
+</div>
+</div></div>
+</section>
+<section class="slide level2">
+
+<h3 id="локальный-тренд">Локальный тренд</h3>
+<p>При расчете локального тренда поверхность строится только в окрестностях ближайших исходных точек.</p>
+<p>Построение локальных трендов основано на построении регрессионной модели в окрестностях этих точек и сглаживании результатов.</p>
+<p>Аналогично глобульному тренду может использовать поверхности различных порядков.</p>
+</section>
+<section class="slide level2">
+
+<h4 id="поверхность-0-порядка">Поверхность 0 порядка</h4>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/clipboard-226028325.png" width="800"></p>
+<figcaption>Источник: Самсонов Т.Е. Визуализация и анализ географических данных на языке R. М.: Географический факультет МГУ, 2024. DOI: 10.5281/zenodo.901911</figcaption>
+</figure>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/clipboard-593246431.png" class="quarto-figure quarto-figure-center" width="700"></p>
+</figure>
+</div>
+</div></div>
+</section>
+<section class="slide level2">
+
+<h4 id="поверхность-1-порядка">Поверхность 1 порядка</h4>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/clipboard-2022293309.png" width="800"></p>
+<figcaption>Источник: Самсонов Т.Е. Визуализация и анализ географических данных на языке R. М.: Географический факультет МГУ, 2024. DOI: 10.5281/zenodo.901911</figcaption>
+</figure>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/clipboard-1584311100.png" class="quarto-figure quarto-figure-center" width="700"></p>
+</figure>
+</div>
+</div></div>
+</section>
+<section class="slide level2">
+
+<h4 id="поверхность-2-порядка">Поверхность 2 порядка</h4>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/clipboard-856739043.png" width="800"></p>
+<figcaption>Источник: Самсонов Т.Е. Визуализация и анализ географических данных на языке R. М.: Географический факультет МГУ, 2024. DOI: 10.5281/zenodo.901911</figcaption>
+</figure>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/clipboard-3480578470.png" class="quarto-figure quarto-figure-center" width="700"></p>
+</figure>
+</div>
+</div></div>
+
+
+</section></section>
+<section id="footnotes" class="footnotes footnotes-end-of-document smaller scrollable" role="doc-endnotes"><h2>Сноски</h2>
+
+<ol>
+<li id="fn1"><p><em>Самсонов Т.Е.</em> <strong>Визуализация и анализ географических данных на языке R.</strong> М.: Географический факультет МГУ, 2024. DOI: <a href="https://doi.org/10.5281/zenodo.901911">10.5281/zenodo.901911</a></p></li>
+<li id="fn2"><p>Sibson, R. (1981), A Brief Description of Natural Neighbor Interpolation. In <em>Interpolating multivariate data</em>, John Wiley &amp; Sons, New York, 1981, pp.&nbsp;21-36.</p></li>
+<li id="fn3"><p><a href="https://mathworld.wolfram.com/VoronoiDiagram.html" class="uri">https://mathworld.wolfram.com/VoronoiDiagram.html</a></p></li>
+<li id="fn4"><p>Диаграмма Вороного <a href="https://neerc.ifmo.ru/wiki/index.php?title=%D0%94%D0%B8%D0%B0%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0_%D0%92%D0%BE%D1%80%D0%BE%D0%BD%D0%BE%D0%B3%D0%BE" class="uri">https://neerc.ifmo.ru/wiki/index.php?title=%D0%94%D0%B8%D0%B0%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0_%D0%92%D0%BE%D1%80%D0%BE%D0%BD%D0%BE%D0%B3%D0%BE</a></p></li>
+<li id="fn5"><p>ГОСТ Р 52438-2005 Географические информационные системы. Термины и определения</p></li>
+<li id="fn6"><p>Как работают радиальные базисные функции <a href="https://pro.arcgis.com/ru/pro-app/3.4/help/analysis/geostatistical-analyst/how-radial-basis-functions-work.htm" class="uri">https://pro.arcgis.com/ru/pro-app/3.4/help/analysis/geostatistical-analyst/how-radial-basis-functions-work.htm</a></p></li>
+</ol>
 </section>
     </div>
   <div class="quarto-auto-generated-content" style="display: none;">
