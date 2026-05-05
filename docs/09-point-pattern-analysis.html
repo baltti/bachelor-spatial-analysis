@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Анализ доступности и обеспеченности населения сервисами – Основы пространственного анализа</title>
+<title>Анализ точечных паттернов – Основы пространственного анализа</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -195,7 +195,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Переключить боковую панель навигации" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./07-service-provision.html">Анализ доступности и обеспеченности населения сервисами</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./09-point-pattern-analysis.html">Анализ точечных паттернов</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Переключить боковую панель навигации" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -261,7 +261,7 @@ window.Quarto = {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./07-service-provision.html" class="sidebar-item-text sidebar-link active">
+  <a href="./07-service-provision.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Анализ доступности и обеспеченности населения сервисами</span></a>
   </div>
 </li>
@@ -273,7 +273,7 @@ window.Quarto = {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./09-point-pattern-analysis.html" class="sidebar-item-text sidebar-link">
+  <a href="./09-point-pattern-analysis.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Анализ точечных паттернов</span></a>
   </div>
 </li>
@@ -287,14 +287,11 @@ window.Quarto = {
     <h2 id="toc-title">Содержание</h2>
    
   <ul>
-  <li><a href="#исходные-данные" id="toc-исходные-данные" class="nav-link active" data-scroll-target="#исходные-данные">Исходные данные</a></li>
-  <li><a href="#формулы-для-расчета" id="toc-формулы-для-расчета" class="nav-link" data-scroll-target="#формулы-для-расчета">Формулы для расчета</a></li>
-  <li><a href="#расчет-доступности" id="toc-расчет-доступности" class="nav-link" data-scroll-target="#расчет-доступности">Расчет доступности</a>
-  <ul class="collapse">
-  <li><a href="#входные-данные" id="toc-входные-данные" class="nav-link" data-scroll-target="#входные-данные">Входные данные</a></li>
-  <li><a href="#построение-модели-расчета-доступности" id="toc-построение-модели-расчета-доступности" class="nav-link" data-scroll-target="#построение-модели-расчета-доступности">Построение модели расчета доступности</a></li>
-  </ul></li>
-  <li><a href="#расчет-обеспеченности" id="toc-расчет-обеспеченности" class="nav-link" data-scroll-target="#расчет-обеспеченности">Расчет обеспеченности</a></li>
+  <li><a href="#data" id="toc-data" class="nav-link active" data-scroll-target="#data">Исходные данные</a></li>
+  <li><a href="#kde" id="toc-kde" class="nav-link" data-scroll-target="#kde">Ядерная оценка плотности</a></li>
+  <li><a href="#оценка-точечного-паттерна" id="toc-оценка-точечного-паттерна" class="nav-link" data-scroll-target="#оценка-точечного-паттерна">Оценка точечного паттерна</a></li>
+  <li><a href="#кластеризация-к-средних" id="toc-кластеризация-к-средних" class="nav-link" data-scroll-target="#кластеризация-к-средних">Кластеризация К-средних</a></li>
+  <li><a href="#кластеризация-dbscan" id="toc-кластеризация-dbscan" class="nav-link" data-scroll-target="#кластеризация-dbscan">Кластеризация DBSCAN</a></li>
   </ul>
 </nav>
     </div>
@@ -303,7 +300,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Анализ доступности и обеспеченности населения сервисами</h1>
+<h1 class="title">Анализ точечных паттернов</h1>
 </div>
 
 
@@ -320,40 +317,21 @@ window.Quarto = {
 </header>
 
 
-<p><strong><em>Обеспеченность населения объектами</em></strong> - <em>количественная характеристика</em> сети объектов социальной, транспортной коммунальной инфраструктур, объектов благоустройства. Обеспеченность населения объектами рекомендуется рассчитывать, <em>как удельную мощность (вместимость, емкость, пропускная способность и т.д.) какого-либо вида инфраструктуры, приходящуюся на одного жителя или представителя определенной возрастной, социальной, профессиональной группы либо на определенное число (сто, тысячу и т.д.) жителей или представителей указанных групп</em>.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
-<p><strong><em>Территориальная доступность</em></strong> - <em>пространственная характеристика</em> сети объектов социальной, транспортной коммунальной инфраструктур. Территориальную доступность <em>рекомендуется рассчитывать либо исходя из затрат на достижение выбранного объекта (как правило, затрат времени), либо исходя из расстояния до выбранного объекта, измеренного по прямой, по имеющимся путям передвижения, или иным образом</em>.</p>
-<div class="callout callout-style-default callout-important callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Важно
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Доступность - это метрика расстояния, то есть насколько близко/далеко находится услуга или сервис. Например, есть ли в пределах 15-минутной доступности от дома школа или детский сад.</p>
-<p>Обеспеченность - это то, какой процент населения или конкретной демографической группы может воспользоваться сервисом/услугой с учетом его емкости или сколько мест в школе приходится на 1000 человек населения.</p>
-</div>
-</div>
-<section id="исходные-данные" class="level1">
+<section id="data" class="level1">
 <h1>Исходные данные</h1>
+<p>В качестве исходных данных для работы будут использованы сведения о преступлениях в Сан-Франциско.</p>
+<p>Все наборы данных доступны по <a href="https://geodacenter.github.io/data-and-lab/SFcrimes_vars/">ссылке</a>.</p>
+<p>В скачанном архиве вы найдете две папки:</p>
 <ul>
-<li><p>жилые дома (можно воспользоваться уже имеющимися у вас данными или скачать новые) - для оценки количества жителей;</p></li>
-<li><p>объекты сервиса (детские сады или школы; также можете взять уже имеющиеся у вас данные или создать новые) - для расчета обеспеченности.</p></li>
+<li><p><strong>Crime events</strong> - векторные слои точечных объектов в формате shapefile для нескольких типов преступлений;</p></li>
+<li><p><strong>SF PD Plots</strong> - агрегированные по округам данные.</p></li>
 </ul>
-<p>Для объектов сервиса обязательно нужно будет создать атрибут <code>capacity</code> (вместимость или мощность объекта) - количество людей, которое сервис может обслужить.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/clipboard-2506351534.png" class="img-fluid figure-img"></p>
-<figcaption>Пример исходных данных</figcaption>
-</figure>
-</div>
-<p>В этой работе будет сразу собрана геомодель для расчета доступности и обеспеченности населения сервисами.</p>
-<p>Заполним атрибут <code>capacity</code>, исходя из усредненного норматива вместимости:</p>
+<p>Так как темой занятия является анализ точечных паттернов, то вам понадобится один из слоев из папки <em>Crime events</em>:</p>
 <ul>
-<li><p>для детских садов - 200 мест<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>;</p></li>
-<li><p>для школ - 1000 мест<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>.</p></li>
+<li><p><em>sf_cartheft.shp</em> - угоны машин;</p></li>
+<li><p><em>sf_drugs.shp</em> - случаи торговли наркотиками;</p></li>
+<li><p><em>sf_roberry.shp</em> - ограбления;</p></li>
+<li><p><em>sf_vandalism.shp</em> - случаи вандализма.</p></li>
 </ul>
 <div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -365,85 +343,90 @@ window.Quarto = {
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>По действующим в настоящее время нормативам вместимость как детских садов, так и школ определяется заданием на проектирование.</p>
-<p>Мы с вами пользуемся очень условными значениями только в качестве примера, так как реальные данные о вместимости нам недоступны.</p>
+<p>Не забывайте, что shapefile - это коварный формат и вам нужен не только файл с расширением <em>.shp</em>, но и все другие с таким же именем, но другими расширениями.</p>
 </div>
 </div>
-<p>Для того, чтобы прописать значение атрибута сразу для всех объектов слоя, в таблице атрибутов слева сверху (сразу под панелью инструментов) вы можете выбрать нужный вам атрибут, прописать его значение и нажать кнопку <em>Обновить все</em>. После этого значения атрибута заполнится для всех строк в таблице.</p>
-<p><img src="images/clipboard-2398941912.png" class="img-fluid"></p>
-<p>Количество населения в каждом доме рассчитаем по формуле:</p>
-<p><span class="math display">\[
-Численность\ населения = \dfrac{Общая\ площадь}{36}=\dfrac{Площадь\ полигона*Этажность}{36}
-\]</span></p>
-<p>В данном случае 36 метров квадратных - это средняя общая площадь квартиры, приходящаяся на одного человека.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-На заметку
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Как рассчитать площадь здания описано по <a href="https://baltti.github.io/bachelor-gis-course/floor%20area%20ratio.html">ссылке</a>.</p>
-</div>
-</div>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-На заметку
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Для тех зданий, где неизвестна этажность, ее можно заполнить как среднее значение этажности для слоя, воспользовавшись выражением:</p>
-<pre><code>case when "Этажность" is NULL 
-  then mean("Этажность")
-  else "Этажность"
-end</code></pre>
-</div>
-</div>
-</section>
-<section id="формулы-для-расчета" class="level1">
-<h1>Формулы для расчета</h1>
-<p>В базовом виде обеспеченность можно рассчитать по простой формуле:</p>
-<p><span class="math display">\[
-Обеспеченность = \dfrac{Вместимость\  объекта}{Численность\  населения}
-\]</span></p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-На заметку
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Численность населения может быть взята как общее число населения, так и количество населения в конкретной возрастной группе (например, количество детей).</p>
-<p>Численность населения также может учитываться только в пределах заданной доступности сервиса.</p>
-</div>
-</div>
-<p>В том случае, если обеспеченность необходимо рассчитать на 1000 человек, формула немного поменяется:</p>
-<p><span class="math display">\[
-Обеспеченность = \dfrac{Вместимость\  объекта}{Численность\  населения}* 1000
-\]</span></p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-На заметку
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Здесь в качестве множителя будет выступать то число, на которое необходимо пересчитать обеспеченность (100, 1000 и т.д.).</p>
-</div>
-</div>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 35%">
+<col style="width: 44%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"><strong>Variable</strong></th>
+<th style="text-align: left;"><strong>Description</strong></th>
+<th>Описание атрибута</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">IncidntNum</td>
+<td style="text-align: left;">Unique identifier for each incident report</td>
+<td>Идентификатор инцидента</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">X_pr</td>
+<td style="text-align: left;">Projected X-coordinates</td>
+<td>Координата Х в прямоугольной системе координат</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Y_pr</td>
+<td style="text-align: left;">Projected Y-coordinates</td>
+<td>Координата Y в прямоугольной системе координат</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Category</td>
+<td style="text-align: left;">Crime classification (robberies, drugs/narcotics possession or sale, vehicle theft, and vandalism)</td>
+<td>Тип преступления</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Descript</td>
+<td style="text-align: left;">Description of the crime</td>
+<td>Описание</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">DayOfWeek</td>
+<td style="text-align: left;">Day of the week that crime was reported</td>
+<td>День недели, в который было подано заявление</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Date</td>
+<td style="text-align: left;">Date of the report</td>
+<td>Дата заявления</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Time</td>
+<td style="text-align: left;">Time of report</td>
+<td>Время заявления</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">PdDistrict</td>
+<td style="text-align: left;">Police district</td>
+<td>Полицейский участок</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Resolution</td>
+<td style="text-align: left;">Outcome of the report, e.g.&nbsp;None, Arrest, Unfounded, etc</td>
+<td>Результат работы по заявлению</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Location</td>
+<td style="text-align: left;">Street address where the crime occurred</td>
+<td>Название улицы, где произошло преступление</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">X</td>
+<td style="text-align: left;">X-Coordinates of crime location</td>
+<td>Долгота</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Y</td>
+<td style="text-align: left;">Y-Coordinates of crime location</td>
+<td>Широта</td>
+</tr>
+</tbody>
+</table>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -454,16 +437,18 @@ end</code></pre>
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Доступность также может быть рассчитана в виде относительного показателя:</p>
-<p><span class="math display">\[
-Доступность = \dfrac{Численность\ населения\ в\ пределах\ заданного\ расстояния}{Численность\  населения}*100\%
-\]</span></p>
+<p>Открыть данные вы можете, просто перетащив файл с расширением <em>.shp</em> в пустое окно QGIS или через строку меню <em>Слой</em> <span class="math inline">\(\longrightarrow\)</span> Добавить слой <span class="math inline">\(\longrightarrow\)</span> Добавить векторный слой.</p>
 </div>
+</div>
+<p>После добавления векторного слоя и открытия подложки (опционально), вы должны увидеть что-то похожее на картинку ниже.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/Снимок экрана 2025-02-18 в 11.23.06.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
 </div>
 </section>
-<section id="расчет-доступности" class="level1">
-<h1>Расчет доступности</h1>
-<p>Для построения моделей будем использовать редактор моделей.</p>
+<section id="kde" class="level1">
+<h1>Ядерная оценка плотности</h1>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -474,44 +459,37 @@ end</code></pre>
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Редактор моделей позволяет выстроить последовательный процесс вычислений из цепочки операций с помощью простого графического интерфейса.</p>
-<p>Полученная геомодель позволяет автоматизировать вычисления и избежать вывода промежуточных результатов.</p>
-<p>Подробнее про построение геомоделей можно в <a href="https://docs.qgis.org/3.34/en/docs/user_manual/processing/modeler.html">документации</a></p>
+<p>Визуальную оценка ядерной плотности можно выполнить с помощью стилизации слоя точечных объектов в виде тепловой карты, о чем рассказано по <a href="https://baltti.github.io/gis-itmo/basics.html#%D1%82%D0%B5%D0%BF%D0%BB%D0%BE%D0%B2%D0%B0%D1%8F-%D0%BA%D0%B0%D1%80%D1%82%D0%B0">ссылке</a>. Однако в этом случае следует помнить, что полученная карта не является статичной и будет изменяться в зависимости от масштаба на экране, тогда как описанный ниже метод расчета даст статичную карту.</p>
 </div>
 </div>
-<p>Открыть редактор моделей можно из строки меню <em>Анализ данных</em> <span class="math inline">\(\longrightarrow\)</span> <em>Конструктор моделей</em> или по клику на кнопку <em>Модели</em> в Панели инструментов анализа.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/Снимок экрана 2025-02-24 в 13.07.26.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
-</figure>
-</div>
-<p>В открывшемся новом окне основная часть предназначена для отображения модели в графическом виде, слева панель данных и алгоритмов (переключаются по вкладкам внизу панели), свойства и переменные модели, а также история команд.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/Снимок экрана 2025-02-24 в 13.08.29.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
-</figure>
-</div>
-<div class="callout callout-style-default callout-note callout-titled">
+<p>Для построения карты ядерной оценки плотности воспользуемся инструментом <em>Тепловая карта (оценка плотности ядер)</em> из панели инструментов анализа.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-На заметку
+Дополнительно
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>В качестве доступных вам алгоритмов вы можете использовать все инструменты, которые есть в вашей панели инструментов анализа в основном окне программы.</p>
+<p>Если у вас закрыта Панель инструментов анализа, то вы можете открыть ее заново из строки меню <em>Вид</em> <span class="math inline">\(\longrightarrow\)</span> <em>Панели</em> <span class="math inline">\(\longrightarrow\)</span> <em>Инструменты анализа</em>.</p>
 </div>
 </div>
-<section id="входные-данные" class="level2">
-<h2 class="anchored" data-anchor-id="входные-данные">Входные данные</h2>
-<p>В первую очередь зададим для нашей модели входные данные. В нашем случае все входные данные будут представлены в виде векторных слоев:</p>
+<p>В открывшемся окне инструмента следует выбрать параметры расчета<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/Снимок экрана 2025-02-19 в 10.45.03.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+<p>Рассмотрим основные параметры подробнее:</p>
 <ul>
-<li><p>здания - обязательный параметр, полигоны;</p></li>
-<li><p>сервисы - обазятельный параметр, полигоны.</p></li>
+<li><p><strong>точечный слой</strong> - это векторный слой точечных объектов, для которого будет выполняться оценка плотности;</p></li>
+<li><p><strong>радиус</strong> - расстояние, в пределах которого будет рассчитываться значение функции плотности;</p></li>
+<li><p>параметры размера растра - так как полученный результат будет представлен в виде непрерывных значений, он будет сформирован в виде растра, поэтому необходимо задать его основные параметры (чем больше строк и полей или чем меньше размер пикселя вы зададите, тем более подробным и качественным получится ваш результат).</p></li>
 </ul>
-<p>Обязательный параметр - это тот, без включения которого в исходные данные запуск модели осуществляться не будет.</p>
+<p>Остальные параметры являются не обязательными для настройки, поэтому мы оставим их без изменений.</p>
+<p>По умолчанию ваш результат будет сохранен в виде временного слоя, но вы можете настроить его сохранение в файл перед выполнением алгоритма или сохранить уже полученный временный слой.</p>
 <div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -522,121 +500,190 @@ end</code></pre>
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Желательно называть входные данные буквами английского алфавита, так как иногда они могут не добавляться в модель или работать некорректно при использовании кириллицы.</p>
+<p>Здесь при оценке плотности будут рассчитаны значения функции плотности только в пределах заданного радиуса, поэтому, если вы выберете слишком маленькую его величину, карта может быть не построена.</p>
 </div>
+</div>
+<p>В результате построения тепловой карты, вы получите следующее изображение (здесь радиус был взят 1000 футов и размер растра примерно 1000 на 1000).</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/Снимок экрана 2025-02-19 в 11.03.19.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
 </div>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="images/clipboard-3485795247.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="2042"></p>
+<p><img src="images/Снимок экрана 2025-02-19 в 11.39.09.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
 </figure>
-</div>
-<p>После добавления входных данных вы увидите их в рабочем пространстве модели.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/clipboard-274330332.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="1462"></p>
-</figure>
-</div>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-На заметку
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>При необходимости вы можете передвигать элементы модели так, чтобы их было лучше видно, и масштабировать изображение элементов в рабочем пространстве.</p>
-</div>
 </div>
 </section>
-<section id="построение-модели-расчета-доступности" class="level2">
-<h2 class="anchored" data-anchor-id="построение-модели-расчета-доступности">Построение модели расчета доступности</h2>
-<p>Для расчета доступности сервиса в первую очередь необходимо построить зоны обслуживания. Здесь мы воспользуемся буферными зонами для их построения.</p>
-<p>Размер буферных зон будет определяться градостроительными нормативами:</p>
+<section id="оценка-точечного-паттерна" class="level1">
+<h1>Оценка точечного паттерна</h1>
+<p>Для того, чтобы количественно оценить тип точечного паттерна, можно оценить разницу между ожидаемым средним расстоянием до ближашего соседа и фактическим.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/AM07_Fig9.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+<p><a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
+<p>По результатам оценки наиболее важными параметрами являются:</p>
 <ul>
-<li><p>300 метров для детских садов;</p></li>
-<li><p>500 метров для школ.</p></li>
+<li><p><em>p-value</em> - вероятность того, что процесс является пространственно случайным;</p></li>
+<li><p><em>z-score</em> - стандартное отклонение распределения.</p></li>
 </ul>
-<p>Однако, чтобы строить буферные зоны в метрических единицах измерения, сначала необходимо перепроецировать слой в плоскую прямоугольную систему координат.</p>
-<div class="callout callout-style-default callout-note callout-titled">
+<p>Как правило, высокие положительные значения <em>z-score</em> говорят о том, что точечный паттерн является регулярным, а низкие отрицательные значения - о том, что точечный паттерн кластеризован.</p>
+<p>В QGIS эта оценка выполняется с помощью инструмента <em>Анализ ближайших соседей</em> из Панели инструментов анализа.</p>
+<p>Для расчетов с его использованием достаточно только выбрать векторный точечный слой и вариант сохранения результата.</p>
+<p>Обратите внимание, что здесь сохранение результата будет происходить в формате html файла, а не уже привычного нам векторного или растрового слоя, так как здесь просто дается результат расчета численных показателей.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/Снимок экрана 2025-02-19 в 11.39.09.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+<p>Полученный результат в текстовом виде будет выглядеть вот так:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/Снимок экрана 2025-02-19 в 11.43.40.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+<p>Рассмотрим полученные результаты:</p>
+<ul>
+<li><p><em>наблюдаемое среднее расстояние</em> - это среднее расстояние до ближайшего соседа;</p></li>
+<li><p><em>ожидаемое среднее расстояние</em> - это среднее расстояние до ближайшего соседа, которое было бы при случайном распределении точек;</p></li>
+<li><p><em>индекс ближайшего соседа</em> - отношение наблюдаемого расстояния к ожидаемому;</p></li>
+<li><p><em>число точек</em> - количество объектов в точечном слое;</p></li>
+<li><p><em>z-счет</em> - стандартное отклонение.</p></li>
+</ul>
+<p>В соответствии с <a href="https://docs.qgis.org/3.34/ru/docs/user_manual/processing_algs/qgis/vectoranalysis.html#nearest-neighbour-analysis">документацией</a>, отрицательные значения говорят о том, что точечный паттерн не является результатом пространственно случайного процесса, тогда как положительные значения могут говорить о том, что процесс скорее регулярен.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/Снимок экрана 2025-02-19 в 16.20.54.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+<div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-На заметку
+Внимание
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Проще всего воспользоваться системой координат из семейства UTM или одной из систем из группы систем координат Гаусса-Крюгера (они аналогичны, отличаются только нумерацией зон).</p>
-<p>Чтобы рассчитать номер зоны для UTM системы координат вы можете воспользоваться калькулятором по <a href="https://www.latlong.net/lat-long-utm.html">ссылке</a>.</p>
+<p>Полученный результат только говорит о возможности пространственной неслучайности процесса. Наличие конкретных кластеров или регулярность паттерна требует дальнейшей проверки и интерпретации.</p>
 </div>
 </div>
-<p>На вкладке <em>Алгоритмы</em> найдем нужный нам инструмент - <em>Перепроецировать слой</em> и укажем его параметры в открывшемся окне.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/clipboard-1310435067.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="898"></p>
-</figure>
-</div>
-<p>Аналогично добавим перепроецирование для зданий.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/clipboard-3388561227.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="1777"></p>
-</figure>
-</div>
-<p>Следующим этапом построим буферные зоны для объектов сервиса. Для этого найдем инструмент <em>Буферизация</em>. Так как мы здесь будем использовать не исходные данные, а результат выполнения перепроецирования, то по нажатию на кнопку <img src="images/clipboard-1454870356.png" class="img-fluid" width="58"> следует выбрать пункт <em>Вывод алгоритма</em>, после чего выбрать результат перепроецирования для объектов сервиса.</p>
-<p><img src="images/clipboard-2107994983.png" class="img-fluid"></p>
-<p>Далее необходимо указать расстояние - радиус обслуживания сервиса.</p>
-<p><img src="images/clipboard-2075241895.png" class="img-fluid"></p>
-<p>На следующем этапе нужно рассчитать количество населения, попавшее в радиус доступности.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-На заметку
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>В данном случае пример будет показан на основе инструмента <em>Объединение атрибутов по расположению (сводка)</em>, но вы также можете воспользоваться калькулятором полей и выражением аналогично тому, как мы это делали в прошлом семестре.</p>
-</div>
-</div>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/clipboard-3757442539.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="1280"></p>
-</figure>
-</div>
-<p>На последнем этапе составим выражение для расчета процента населения, которое находится в пределах радиуса доступности от сервиса, с использованием калькулятора полей.</p>
-<p><img src="images/clipboard-3764636610.png" class="img-fluid"></p>
-<p>Итоговая модель будет выглядеть, как показано на рисунке ниже.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/clipboard-2376702965.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="1219"></p>
-</figure>
-</div>
+<p>В нашем случае, было получено значение <em>z-score</em> = -90.5, что говорит о том, что точечный паттерн скорее всего является кластеризованным.</p>
 </section>
+<section id="кластеризация-к-средних" class="level1">
+<h1>Кластеризация К-средних</h1>
+<p>Как было рассмотрено в лекции, кластеризация методом К-средних позволяет получить обособленные друг от друга кластеры, внутри которых будет минимизироваться расстояние от каждого из объектов до центроида кластера (при этом центроид не будет является одним из исходных объектов, а просто будет центром массы всего кластера).</p>
+<p>В QGIS этот метод реализован в виде инструмента <em>Кластеризация K-means</em> в Панели инструментов анализа.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/Снимок экрана 2025-02-20 в 11.26.20.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+<p>Для выполнения алгоритма достаточно просто выбрать векторный слой с точечными данными для кластеризации и необходимое количество кластеров.</p>
+<p>Для кластеризации не обязательно использовать только точечные объекты, ее можно выполнить также для линейных и полигональных объектов, но в этих случаях кластеризация будет выполняться не непосредственно для них, а для их центроидов.</p>
+<p>В нашем случае количество кластеров выбирается произвольно, однако существуют определенные методы расчета наиболее оптимального числа кластеров. Почитать про эти методы можно почитать, например, <a href="https://habr.com/ru/companies/jetinfosystems/articles/467745/">здесь</a>.</p>
+<p>В качестве дополнительных параметров алгоритма можно задать свои имена для полей с номером кластера и размером кластера.</p>
+<p>По результатам кластеризации вы получите точечный слой, главным отличием которого от исходного будут являться два новых поля:</p>
+<ul>
+<li><em>CLUSTER_ID -</em> порядковый номер кластера (начинаются с 0, так как индексация здесь унаследована от языка программирования);</li>
+<li><em>CLUSTER-SIZE</em> - размер кластера (количество точек в нем).</li>
+</ul>
+<p>Для того, чтобы показать, где расположены точки каждого из кластеров на карте, настроим их символы в окне Свойств слоя. В качестве типа стиля следует выбрать <em>Символизация по уникальным значениям</em>, а в качестве значения - <em>CLUSTER_ID.</em></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/Снимок экрана 2025-02-20 в 11.35.25.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+<p>После этого каждый кластер получит свой цвет на карте.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/Снимок экрана 2025-02-20 в 11.36.58.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+<p>Кластеризация методом К-средних позволяет сформировать обособленные и компактные кластеры. Проверим, действительно ли это так. Для проверки впишем каждый кластер в выпуклый многоугольник.</p>
+<p>Если кластеры действительно компактны и обособлены друг от друга, то полученные многоугольники не будут соприкасаться или пересекаться.</p>
+<p>Для построения выпуклых многоугольников воспользуемся инструментом <em>Минимальная охватывающая геометрия</em> из Панели инструментов анализа. Он позволяет построить нужный тип минимальной охватывающей геометрии.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/Снимок экрана 2025-02-20 в 11.53.46.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+<p>В качестве параметров здесь следует выбрать</p>
+<ul>
+<li><p>слой, для объектов которого будет строиться минимальная охватывающая геометрия;</p></li>
+<li><p>поле классификации - то поле/атрибут, на основе которого объекты будут объединяться в группы для построения минимальной охватывающей геометрии;</p></li>
+<li><p>тип геометрии - так как мы хотим получить выпуклые многоугольники вокруг каждого кластера, то нужный тип геометрии - выпуклая оболочка; другие типы геометрии - <em>охват</em> (прямоугольник по минимальным и максимальным координатам слоя), <em>минимальный ориентированный прямоугольник</em> (прямоугольник, ориентированный с учетом разброса наблюдений), <em>минимальная описывающая окружность</em>.</p></li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/Снимок экрана 2025-02-20 в 11.53.59.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+<p>В результате будет построен новый векторный слой с полигонами - выпуклыми многоугольниками, описывающими каждый кластер.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/Снимок экрана 2025-02-20 в 11.58.43.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+<p>Факт того, что полученные выпуклые многоугольники не пересекаются между собой, говорит о том, что кластеры обособлены друг от друга.</p>
+<p>На этой карте вы можете заметить еще и то, что некоторые обособленные точки (например, на острове в правом верхнем углу или в левой части) перетягивают в свою сторону центроиды кластеров, что может разбить некоторые довольно плотные группы.</p>
 </section>
-<section id="расчет-обеспеченности" class="level1">
-<h1>Расчет обеспеченности</h1>
-<p>Полученную модель можно дополнить расчетом обеспеченности.</p>
-<p><img src="images/clipboard-980433365.png" class="img-fluid"></p>
-<div class="callout callout-style-default callout-note callout-titled">
+<section id="кластеризация-dbscan" class="level1">
+<h1>Кластеризация DBSCAN</h1>
+<p>Ввиду того, что метод кластеризации К-средних всегда все точки отнесет к тому или иному кластеру, что может привести к некорректной разбивке на группы, он может показывать неудовлетворительные результаты на реальных данных, в которых может присутствовать шум и выбросы.</p>
+<p>В этих случаях более оптимальным методом кластеризации будет основанный на плотности DBSCAN (Density-based spatial clustering of applications with noise).</p>
+<p>В QGIS этот алгоритм реализован в виде инструмента <em>Кластеризация DBSCAN</em>.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/Снимок экрана 2025-02-20 в 12.18.50.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+<p>Основными параметрами являются:</p>
+<ul>
+<li><em>векторный слой</em> с объектами, для которых выполняется кластеризация;</li>
+<li><em>минимальный размер кластера</em> - минимальное количество соседей в пределах заданного расстояния, при котором точка будет включена в ядро кластера;</li>
+<li><em>максимальное расстояние между кластеризованными точками</em> - расстояние, в пределах которого будет осуществляться поиск соседей для каждой их точек.</li>
+</ul>
+<p>Дополнительными параметрами так же, как и для кластеризации К-средних будут являться <em>CLUSTER_ID</em> и <em>CLUSTER-SIZE</em>, а кроме того - возможность рассматривать граничные точки в качестве шума.</p>
+<p>Как и для кластеризации методом К-средних параметры в нашем случае были выбраны произвольно, но в случае реального исследования они должны быть обоснованы, исходя из знания предметной области и природы простраственного процесса.</p>
+<p>В результате снова получим векторный слой с точечными объектами и двумя новыми атрибутами <em>CLUSTER_ID</em> и <em>CLUSTER-SIZE.</em> Обратите внимание, что для некоторых из точек будут пропущены значения этих полей, это значит, что точка не попала ни в один из кластеров и является точкой шума.</p>
+<p>Аналогично предыдущему разделу покажем кластеры на карте разными цветами.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/Снимок экрана 2025-02-20 в 12.29.58.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+<p>На карте видно, что в результате нами были получены небольшие кластеры в местах с наибольшей плотностью наблюдений, тогда как значительное число точек было отнесено к точкам шума, то есть не вошло ни в один из кластеров.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/Снимок экрана 2025-02-20 в 12.33.12.png" class="img-fluid figure-img"></p>
+<figcaption>Кластеры</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/Снимок экрана 2025-02-20 в 12.33.27.png" class="img-fluid figure-img"></p>
+<figcaption>Точки шума</figcaption>
+</figure>
+</div>
+<p>Для проверки наличия пересечений между кластерами можно аналогично предыдущему разделу построить минимальные охватывающие геометрии каждого из кластеров.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-На заметку
+Дополнительно
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Ваша геомодель может иметь столько результатов, сколько вы посчитаете нужным.</p>
-<p>При необходимости каждый этап расчета может быть выведен как самостоятельный результат.</p>
+<p>Также имеющаяся в стандартном наборе Панели инструментов анализа кластеризация ST-DBSCAN является вариацией метода DBSCAN, в котором дополнительно учитывается время события. Такой метод кластеризации полезен, если вы знаете или предполагаете, что точечный процесс происходит с разной интенсивностью в разные временные периоды или происходит преимущественно в определенные периоды времени.</p>
+<p>Подробно метод описан в <a href="https://www.sciencedirect.com/science/article/abs/pii/S0169023X06000218">статье</a></p>
 </div>
 </div>
-<p><img src="images/clipboard-2107511711.png" class="img-fluid"></p>
 
 
 </section>
@@ -645,9 +692,8 @@ end</code></pre>
 <div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Сноски</h2>
 
 <ol>
-<li id="fn1"><p>Приказ Минэкономразвития России от 15.02.2021 N 71 “Об утверждении Методических рекомендаций по подготовке нормативов градостроительного проектирования” <a href="https://www.consultant.ru/document/cons_doc_LAW_379662/" class="uri">https://www.consultant.ru/document/cons_doc_LAW_379662/</a><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2"><p>Детские ясли-сады следует проектировать на 1, 2, 4, 6, 8, 10, 12 и 14 групп или, соответственно, не более чем на 25, 50, 95, 145, 195, 240, 290 и 340 мест. - <strong>СНиП Н-64-80. Детские дошкольные учреждения/Госстрой СССР. — М.: Стройиздат, 1981.— 15 с</strong><a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn3"><p>Количество ученических мест в типовых проектах зданий школ и школ-интернатов следует принимать не более: в школах - 1400 - <strong>СНиП II-Л.4-62 Общеобразовательные школы и школы-интернаты. Нормы проектирования</strong><a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn1"><p>Более подробно почитать про параметры можно по <a href="https://docs.qgis.org/latest/en/docs/user_manual/processing_algs/qgis/interpolation.html">ссылке</a><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Источник изображения: <a href="https://gistbok-topics.ucgis.org/AM-03-007" class="uri">https://gistbok-topics.ucgis.org/AM-03-007</a><a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
